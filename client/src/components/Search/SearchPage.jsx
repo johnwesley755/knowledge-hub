@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "react-query";
-import { searchAPI } from "../../services/api";
-import SearchResults from "./SearchResults";
-import SemanticSearch from "./SemanticSearch";
-import LoadingSpinner from "../Common/LoadingSpinner";
+import { searchAPI } from "../../services/api.js";
+import SearchResults from "./SearchResults.jsx";
+import SemanticSearch from "./SemanticSearch.jsx";
+import LoadingSpinner from "../Common/LoadingSpinner.jsx";
 import { Search, Filter, Brain, List } from "lucide-react";
-import { debounce } from "../../utils/helpers";
+import { debounce } from "../../utils/helpers.js";
 
 const SearchPage = () => {
   const [searchMode, setSearchMode] = useState("text"); // 'text' or 'semantic'
@@ -210,7 +210,7 @@ const SearchPage = () => {
       )}
 
       {/* Empty State */}
-      {!query && (
+      {!query.trim() && (
         <div className="bg-white rounded-lg shadow-sm border p-12 text-center">
           <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">

@@ -15,11 +15,11 @@ import {
   getCategoryColor,
   getStatusColor,
   truncateText,
-} from "../../utils/helpers";
-import { useDeleteDocument, useToggleLike } from "../../hooks/useDocuments";
-import { useAuth } from "../../hooks/useAuth";
+} from "../../utils/helpers.js";
+import { useDeleteDocument, useToggleLike } from "../../hooks/useDocuments.js";
+import { useAuth } from "../../hooks/useAuth.js";
 import toast from "react-hot-toast";
-import { documentsAPI } from "../../services/api";
+import { documentsAPI } from "../../services/api.js";
 
 const DocumentCard = ({ document, viewMode = "grid" }) => {
   const { user } = useAuth();
@@ -61,12 +61,24 @@ const DocumentCard = ({ document, viewMode = "grid" }) => {
     setShowMenu(false);
     toast.promise(
       documentsAPI.download(document._id).then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
+        const url = window.URL.createObjectURL(
+          new Blob([response.data], { type: "application/pdf" })
+        );
+        const link = window.document.createElement("a");
         link.href = url;
-        const filename = document.title.replace(/[^a-z0-9_.-]/gi, "_") + ".txt";
+
+        const contentDisposition = response.headers["content-disposition"];
+        let filename = `${document.title.replace(/[^a-z0-9_.-]/gi, "_")}.pdf`;
+        if (contentDisposition) {
+          const filenameMatch =
+            contentDisposition.match(/filename="?([^"]+)"?/);
+          if (filenameMatch && filenameMatch.length > 1) {
+            filename = filenameMatch[1];
+          }
+        }
+
         link.setAttribute("download", filename);
-        document.body.appendChild(link);
+        window.document.body.appendChild(link);
         link.click();
         link.parentNode.removeChild(link);
         window.URL.revokeObjectURL(url);
@@ -74,7 +86,7 @@ const DocumentCard = ({ document, viewMode = "grid" }) => {
       {
         loading: "Preparing download...",
         success: "Download started!",
-        error: "Could not download document.",
+        error: (err) => err.message || "Could not download document.",
       }
     );
   };

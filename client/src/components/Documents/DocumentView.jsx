@@ -27,6 +27,7 @@ import {
   getStatusColor,
 } from "../../utils/helpers";
 import toast from "react-hot-toast";
+import { documentsAPI } from "../../services/api";
 
 const DocumentView = () => {
   const { id } = useParams();
@@ -38,6 +39,39 @@ const DocumentView = () => {
   const { data: document, isLoading, error } = useDocument(id);
   const toggleLike = useToggleLike();
   const deleteDocument = useDeleteDocument();
+
+  const handleDownload = async () => {
+    toast.promise(
+      documentsAPI.download(document._id).then((response) => {
+        const url = window.URL.createObjectURL(
+          new Blob([response.data], { type: "application/pdf" })
+        );
+        const link = window.document.createElement("a");
+        link.href = url;
+
+        const contentDisposition = response.headers["content-disposition"];
+        let filename = `${document.title.replace(/[^a-z0-9_.-]/gi, "_")}.pdf`;
+        if (contentDisposition) {
+          const filenameMatch =
+            contentDisposition.match(/filename="?([^"]+)"?/);
+          if (filenameMatch && filenameMatch.length > 1) {
+            filename = filenameMatch[1];
+          }
+        }
+
+        link.setAttribute("download", filename);
+        window.document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }),
+      {
+        loading: "Preparing download...",
+        success: "Download started!",
+        error: (err) => err.message || "Could not download document.",
+      }
+    );
+  };
 
   if (isLoading) {
     return (
@@ -109,6 +143,13 @@ const DocumentView = () => {
                   <span>Edit</span>
                 </Link>
               )}
+              <button
+                onClick={handleDownload}
+                className="btn btn-secondary flex items-center space-x-2"
+              >
+                <Download size={16} />
+                <span>Download</span>
+              </button>
 
               <button
                 onClick={() => setShowVersions(!showVersions)}

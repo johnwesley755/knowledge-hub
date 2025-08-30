@@ -1,21 +1,22 @@
-import { useState } from 'react'
-import { useMutation, useQuery } from 'react-query'
-import { qaAPI, documentsAPI } from '../../services/api'
-import LoadingSpinner from '../Common/LoadingSpinner'
-import { 
-  MessageSquare, 
-  Send, 
-  Bot, 
-  User, 
-  FileText, 
+import { useState } from "react";
+import { useMutation, useQuery } from "react-query";
+import { qaAPI, documentsAPI } from "../../services/api.js";
+import LoadingSpinner from "../Common/LoadingSpinner.jsx";
+import {
+  MessageSquare,
+  Send,
+  Bot,
+  User,
+  FileText,
   Search,
   BookOpen,
   Lightbulb,
   Clock,
-  Trash2
-} from 'lucide-react'
-import { formatRelativeTime } from '../../utils/helpers'
-import toast from 'react-hot-toast'
+  Trash2,
+} from "lucide-react";
+import { formatRelativeTime } from "../../utils/helpers.js";
+import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const TeamQA = () => {
   const [question, setQuestion] = useState("");

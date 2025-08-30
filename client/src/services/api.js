@@ -58,6 +58,7 @@ export const documentsAPI = {
   getStats: () => api.get("/documents/stats"),
   download: (id) =>
     api.get(`/documents/${id}/download`, { responseType: "blob" }),
+
 };
 
 export const searchAPI = {
