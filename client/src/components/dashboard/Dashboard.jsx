@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import { useDocuments } from "../../hooks/useDocuments";
-import DocumentCard from "./DocumentCard";
-import ActivityFeed from "./ActivityFeed";
-import LoadingSpinner from "../Common/LoadingSpinner";
+import { useAuth } from "../../hooks/useAuth.js";
+import { useDocuments } from "../../hooks/useDocuments.js";
+import { documentsAPI } from "../../services/api.js";
+
+import DocumentCard from "./DocumentCard.jsx";
+import ActivityFeed from "./ActivityFeed.jsx";
+import LoadingSpinner from "../Common/LoadingSpinner.jsx";
 import {
   Plus,
-  Search,
   Filter,
   Grid,
   List,
@@ -15,6 +16,7 @@ import {
   BookOpen,
   Users,
   Clock,
+  Search,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -28,8 +30,27 @@ const Dashboard = () => {
   });
   const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'list'
   const [showFilters, setShowFilters] = useState(false);
+  const [statsData, setStatsData] = useState({
+    recentActivity: 0,
+    uniqueCollaborators: 0,
+    newThisWeek: 0,
+  });
 
   const { data: documentsData, isLoading, error } = useDocuments(filters);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await documentsAPI.getStats();
+        if (response.data.success) {
+          setStatsData(response.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch dashboard stats:", err);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const stats = [
     {
@@ -40,19 +61,19 @@ const Dashboard = () => {
     },
     {
       name: "Recent Activity",
-      value: "12",
+      value: statsData.recentActivity,
       icon: TrendingUp,
       color: "bg-green-500",
     },
     {
       name: "Collaborators",
-      value: "8",
+      value: statsData.uniqueCollaborators,
       icon: Users,
       color: "bg-purple-500",
     },
     {
-      name: "This Week",
-      value: "24",
+      name: "New This Week",
+      value: statsData.newThisWeek,
       icon: Clock,
       color: "bg-orange-500",
     },

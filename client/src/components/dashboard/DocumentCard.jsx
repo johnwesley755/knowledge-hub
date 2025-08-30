@@ -19,6 +19,7 @@ import {
 import { useDeleteDocument, useToggleLike } from "../../hooks/useDocuments";
 import { useAuth } from "../../hooks/useAuth";
 import toast from "react-hot-toast";
+import { documentsAPI } from "../../services/api";
 
 const DocumentCard = ({ document, viewMode = "grid" }) => {
   const { user } = useAuth();
@@ -54,6 +55,28 @@ const DocumentCard = ({ document, viewMode = "grid" }) => {
     } catch (error) {
       toast.error("Failed to update like");
     }
+  };
+
+  const handleDownload = async () => {
+    setShowMenu(false);
+    toast.promise(
+      documentsAPI.download(document._id).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        const filename = document.title.replace(/[^a-z0-9_.-]/gi, "_") + ".txt";
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }),
+      {
+        loading: "Preparing download...",
+        success: "Download started!",
+        error: "Could not download document.",
+      }
+    );
   };
 
   if (viewMode === "list") {
@@ -143,10 +166,7 @@ const DocumentCard = ({ document, viewMode = "grid" }) => {
                     <span>View</span>
                   </Link>
                   <button
-                    onClick={() => {
-                      // Download functionality would go here
-                      setShowMenu(false);
-                    }}
+                    onClick={handleDownload}
                     className="flex items-center space-x-2 w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50"
                   >
                     <Download size={16} />
@@ -256,10 +276,7 @@ const DocumentCard = ({ document, viewMode = "grid" }) => {
                     </Link>
                   )}
                   <button
-                    onClick={() => {
-                      // Download functionality would go here
-                      setShowMenu(false);
-                    }}
+                    onClick={handleDownload}
                     className="flex items-center space-x-2 w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50"
                   >
                     <Download size={16} />

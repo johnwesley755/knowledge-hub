@@ -1,7 +1,10 @@
-const Document = require('../models/Document');
-const DocumentVersion = require('../models/DocumentVersion');
-const { createActivity } = require('../services/activityService');
-const { generateSummaryAndTags, generateEmbedding } = require('../services/geminiService');
+const Document = require("../models/Document");
+const DocumentVersion = require("../models/DocumentVersion");
+const { createActivity } = require("../services/activityService");
+const {
+  generateSummaryAndTags,
+  generateEmbedding,
+} = require("../services/geminiService");
 
 // @desc    Get all documents
 // @route   GET /api/documents
@@ -15,12 +18,12 @@ const getDocuments = async (req, res) => {
 
     // Build query
     let query = {};
-    
+
     // User can see their own docs + public docs + docs they're collaborators on
     query.$or = [
       { author: req.user.id },
-      { visibility: 'public' },
-      { 'collaborators.user': req.user.id }
+      { visibility: "public" },
+      { "collaborators.user": req.user.id },
     ];
 
     if (category) query.category = category;
@@ -28,9 +31,9 @@ const getDocuments = async (req, res) => {
     if (author) query.author = author;
 
     const documents = await Document.find(query)
-      .populate('author', 'name email avatar')
-      .populate('collaborators.user', 'name email avatar')
-      .populate('lastModifiedBy', 'name email')
+      .populate("author", "name email avatar")
+      .populate("collaborators.user", "name email avatar")
+      .populate("lastModifiedBy", "name email")
       .sort({ updatedAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -43,12 +46,12 @@ const getDocuments = async (req, res) => {
       pagination: {
         page,
         pages: Math.ceil(total / limit),
-        total
-      }
+        total,
+      },
     });
   } catch (error) {
-    console.error('Get documents error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Get documents error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -58,21 +61,22 @@ const getDocuments = async (req, res) => {
 const getDocument = async (req, res) => {
   try {
     const document = await Document.findById(req.params.id)
-      .populate('author', 'name email avatar')
-      .populate('collaborators.user', 'name email avatar')
-      .populate('lastModifiedBy', 'name email');
+      .populate("author", "name email avatar")
+      .populate("collaborators.user", "name email avatar")
+      .populate("lastModifiedBy", "name email");
 
     if (!document) {
-      return res.status(404).json({ message: 'Document not found' });
+      return res.status(404).json({ message: "Document not found" });
     }
 
     // Check permissions
-    const hasAccess = document.author._id.toString() === req.user.id ||
-                     document.visibility === 'public' ||
-                     document.collaborators.some(c => c.user._id.toString() === req.user.id);
+    const hasAccess =
+      document.author._id.toString() === req.user.id ||
+      document.visibility === "public" ||
+      document.collaborators.some((c) => c.user._id.toString() === req.user.id);
 
     if (!hasAccess) {
-      return res.status(403).json({ message: 'Access denied' });
+      return res.status(403).json({ message: "Access denied" });
     }
 
     // Increment view count
@@ -80,17 +84,17 @@ const getDocument = async (req, res) => {
     await document.save();
 
     // Log activity
-    await createActivity(req.user.id, 'viewed', 'document', document._id, {
-      title: document.title
+    await createActivity(req.user.id, "viewed", "document", document._id, {
+      title: document.title,
     });
 
     res.json({
       success: true,
-      data: document
+      data: document,
     });
   } catch (error) {
-    console.error('Get document error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Get document error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -103,7 +107,7 @@ const createDocument = async (req, res) => {
 
     // Generate AI summary and tags
     const { summary, tags } = await generateSummaryAndTags(content);
-    
+
     // Generate embedding for semantic search
     const embedding = await generateEmbedding(content);
 
@@ -113,14 +117,14 @@ const createDocument = async (req, res) => {
       summary,
       tags,
       category,
-      visibility: visibility || 'private',
+      visibility: visibility || "private",
       author: req.user.id,
       lastModifiedBy: req.user.id,
       embedding,
-      collaborators: collaborators || []
+      collaborators: collaborators || [],
     });
 
-    await document.populate('author', 'name email avatar');
+    await document.populate("author", "name email avatar");
 
     // Create version history
     await DocumentVersion.create({
@@ -131,29 +135,29 @@ const createDocument = async (req, res) => {
       summary,
       tags,
       modifiedBy: req.user.id,
-      changeDescription: 'Initial creation'
+      changeDescription: "Initial creation",
     });
 
     // Log activity
-    await createActivity(req.user.id, 'created', 'document', document._id, {
+    await createActivity(req.user.id, "created", "document", document._id, {
       title: document.title,
-      category: document.category
+      category: document.category,
     });
 
     // Emit real-time update
-    const io = req.app.get('io');
-    io.emit('document-created', {
+    const io = req.app.get("io");
+    io.emit("document-created", {
       document: document,
-      user: req.user
+      user: req.user,
     });
 
     res.status(201).json({
       success: true,
-      data: document
+      data: document,
     });
   } catch (error) {
-    console.error('Create document error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Create document error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -165,22 +169,26 @@ const updateDocument = async (req, res) => {
     const document = await Document.findById(req.params.id);
 
     if (!document) {
-      return res.status(404).json({ message: 'Document not found' });
+      return res.status(404).json({ message: "Document not found" });
     }
 
     // Check permissions
-    const canEdit = document.author.toString() === req.user.id ||
-                   document.collaborators.some(c => 
-                     c.user.toString() === req.user.id && 
-                     ['edit', 'admin'].includes(c.permissions)
-                   );
+    const canEdit =
+      document.author.toString() === req.user.id ||
+      document.collaborators.some(
+        (c) =>
+          c.user.toString() === req.user.id &&
+          ["edit", "admin"].includes(c.permissions)
+      );
 
     if (!canEdit) {
-      return res.status(403).json({ message: 'Not authorized to edit this document' });
+      return res
+        .status(403)
+        .json({ message: "Not authorized to edit this document" });
     }
 
     const { title, content, category, visibility, status } = req.body;
-    
+
     // Create version before updating
     await DocumentVersion.create({
       documentId: document._id,
@@ -190,7 +198,7 @@ const updateDocument = async (req, res) => {
       summary: document.summary,
       tags: document.tags,
       modifiedBy: req.user.id,
-      changeDescription: req.body.changeDescription || 'Updated document'
+      changeDescription: req.body.changeDescription || "Updated document",
     });
 
     // Generate new AI summary and tags if content changed
@@ -206,32 +214,33 @@ const updateDocument = async (req, res) => {
       {
         ...updates,
         lastModifiedBy: req.user.id,
-        version: document.version + 1
+        $inc: { version: 1 },
       },
       { new: true, runValidators: true }
-    ).populate('author', 'name email avatar')
-     .populate('lastModifiedBy', 'name email');
+    )
+      .populate("author", "name email avatar")
+      .populate("lastModifiedBy", "name email");
 
     // Log activity
-    await createActivity(req.user.id, 'updated', 'document', document._id, {
+    await createActivity(req.user.id, "updated", "document", document._id, {
       title: updatedDocument.title,
-      changes: Object.keys(updates)
+      changes: Object.keys(updates),
     });
 
     // Emit real-time update
-    const io = req.app.get('io');
-    io.to(document._id.toString()).emit('document-updated', {
+    const io = req.app.get("io");
+    io.to(document._id.toString()).emit("document-updated", {
       document: updatedDocument,
-      user: req.user
+      user: req.user,
     });
 
     res.json({
       success: true,
-      data: updatedDocument
+      data: updatedDocument,
     });
   } catch (error) {
-    console.error('Update document error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Update document error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -243,43 +252,46 @@ const deleteDocument = async (req, res) => {
     const document = await Document.findById(req.params.id);
 
     if (!document) {
-      return res.status(404).json({ message: 'Document not found' });
+      return res.status(404).json({ message: "Document not found" });
     }
 
     // Check permissions (only author or admin collaborator can delete)
-    const canDelete = document.author.toString() === req.user.id ||
-                     document.collaborators.some(c => 
-                       c.user.toString() === req.user.id && c.permissions === 'admin'
-                     );
+    const canDelete =
+      document.author.toString() === req.user.id ||
+      document.collaborators.some(
+        (c) => c.user.toString() === req.user.id && c.permissions === "admin"
+      );
 
     if (!canDelete) {
-      return res.status(403).json({ message: 'Not authorized to delete this document' });
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete this document" });
     }
 
-    await document.remove();
-    
+    await Document.findByIdAndDelete(req.params.id);
+
     // Delete version history
     await DocumentVersion.deleteMany({ documentId: req.params.id });
 
     // Log activity
-    await createActivity(req.user.id, 'deleted', 'document', document._id, {
-      title: document.title
+    await createActivity(req.user.id, "deleted", "document", document._id, {
+      title: document.title,
     });
 
     // Emit real-time update
-    const io = req.app.get('io');
-    io.emit('document-deleted', {
+    const io = req.app.get("io");
+    io.emit("document-deleted", {
       documentId: document._id,
-      user: req.user
+      user: req.user,
     });
 
     res.json({
       success: true,
-      message: 'Document deleted successfully'
+      message: "Document deleted successfully",
     });
   } catch (error) {
-    console.error('Delete document error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Delete document error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -289,22 +301,22 @@ const deleteDocument = async (req, res) => {
 const getDocumentVersions = async (req, res) => {
   try {
     const document = await Document.findById(req.params.id);
-    
+
     if (!document) {
-      return res.status(404).json({ message: 'Document not found' });
+      return res.status(404).json({ message: "Document not found" });
     }
 
     const versions = await DocumentVersion.find({ documentId: req.params.id })
-      .populate('modifiedBy', 'name email avatar')
+      .populate("modifiedBy", "name email avatar")
       .sort({ version: -1 });
 
     res.json({
       success: true,
-      data: versions
+      data: versions,
     });
   } catch (error) {
-    console.error('Get document versions error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Get document versions error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -314,23 +326,23 @@ const getDocumentVersions = async (req, res) => {
 const toggleLike = async (req, res) => {
   try {
     const document = await Document.findById(req.params.id);
-    
+
     if (!document) {
-      return res.status(404).json({ message: 'Document not found' });
+      return res.status(404).json({ message: "Document not found" });
     }
 
     const liked = document.metrics.likes.includes(req.user.id);
-    
+
     if (liked) {
       document.metrics.likes = document.metrics.likes.filter(
-        id => id.toString() !== req.user.id
+        (id) => id.toString() !== req.user.id
       );
     } else {
       document.metrics.likes.push(req.user.id);
-      
+
       // Log activity
-      await createActivity(req.user.id, 'liked', 'document', document._id, {
-        title: document.title
+      await createActivity(req.user.id, "liked", "document", document._id, {
+        title: document.title,
       });
     }
 
@@ -339,13 +351,44 @@ const toggleLike = async (req, res) => {
     res.json({
       success: true,
       liked: !liked,
-      likesCount: document.metrics.likes.length
+      likesCount: document.metrics.likes.length,
     });
   } catch (error) {
-    console.error('Toggle like error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Toggle like error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
+const downloadDocument = async (req, res) => {
+  try {
+    const document = await Document.findById(req.params.id);
+
+    if (!document) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    // Check permissions (same as viewing a document)
+    const hasAccess =
+      document.author.toString() === req.user.id ||
+      document.visibility === "public" ||
+      document.collaborators.some((c) => c.user.toString() === req.user.id);
+
+    if (!hasAccess) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    // Sanitize filename to prevent security issues
+    const filename =
+      (document.title || "document").replace(/[^a-z0-9_.-]/gi, "_") + ".txt";
+
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Content-Type", "text/plain");
+    res.send(document.content);
+  } catch (error) {
+    console.error("Download document error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 
 module.exports = {
   getDocuments,
@@ -354,5 +397,6 @@ module.exports = {
   updateDocument,
   deleteDocument,
   getDocumentVersions,
-  toggleLike
+  toggleLike,
+  downloadDocument,
 };

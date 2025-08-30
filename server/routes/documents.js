@@ -8,6 +8,7 @@ const {
   deleteDocument,
   getDocumentVersions,
   toggleLike,
+  downloadDocument, // Import downloadDocument
 } = require("../controllers/documentController");
 const { protect } = require("../middleware/auth");
 const { handleValidationErrors } = require("../middleware/validation");
@@ -54,6 +55,7 @@ router.put(
 router.delete("/:id", protect, deleteDocument);
 router.get("/:id/versions", protect, getDocumentVersions);
 router.post("/:id/like", protect, toggleLike);
+router.get("/:id/download", protect, downloadDocument); // Add download route
 
 // Activity feed
 router.get("/activities/feed", protect, async (req, res) => {
