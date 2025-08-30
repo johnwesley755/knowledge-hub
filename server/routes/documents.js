@@ -8,7 +8,8 @@ const {
   deleteDocument,
   getDocumentVersions,
   toggleLike,
-  downloadDocument, // Import downloadDocument
+  downloadDocument,
+  getStats, // Import getStats
 } = require("../controllers/documentController");
 const { protect } = require("../middleware/auth");
 const { handleValidationErrors } = require("../middleware/validation");
@@ -44,6 +45,10 @@ router.post(
   handleValidationErrors,
   createDocument
 );
+
+// This must come before /:id to avoid "stats" being treated as an ID
+router.get("/stats", protect, getStats);
+
 router.get("/:id", protect, getDocument);
 router.put(
   "/:id",
@@ -55,7 +60,7 @@ router.put(
 router.delete("/:id", protect, deleteDocument);
 router.get("/:id/versions", protect, getDocumentVersions);
 router.post("/:id/like", protect, toggleLike);
-router.get("/:id/download", protect, downloadDocument); // Add download route
+router.get("/:id/download", protect, downloadDocument);
 
 // Activity feed
 router.get("/activities/feed", protect, async (req, res) => {

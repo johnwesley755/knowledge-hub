@@ -5,6 +5,7 @@ const {
   generateSummaryAndTags,
   generateEmbedding,
 } = require("../services/geminiService");
+const PDFDocument = require("pdfkit");
 
 // @desc    Get all documents
 // @route   GET /api/documents
@@ -358,6 +359,10 @@ const toggleLike = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// @desc    Download document
+// @route   GET /api/documents/:id/download
+// @access  Private
 const downloadDocument = async (req, res) => {
   try {
     const document = await Document.findById(req.params.id);
@@ -376,19 +381,86 @@ const downloadDocument = async (req, res) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    // Sanitize filename to prevent security issues
+    // Sanitize filename
     const filename =
-      (document.title || "document").replace(/[^a-z0-9_.-]/gi, "_") + ".txt";
+      (document.title || "document").replace(/[^a-z0-9_.-]/gi, "_") + ".pdf";
 
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-    res.setHeader("Content-Type", "text/plain");
-    res.send(document.content);
+    res.setHeader("Content-Type", "application/pdf");
+
+    const doc = new PDFDocument();
+    doc.pipe(res);
+
+    // Add content to the PDF
+    doc.fontSize(20).text(document.title, { align: "center" });
+    doc.moveDown();
+    doc.fontSize(12).text(document.content);
+
+    doc.end();
   } catch (error) {
     console.error("Download document error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
+// @desc    Get dashboard stats
+// @route   GET /api/documents/stats
+// @access  Private
+const getStats = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    // Base query for documents accessible by the user
+    const userDocsQuery = {
+      $or: [
+        { author: userId },
+        { visibility: "public" },
+        { "collaborators.user": userId },
+      ],
+    };
+
+    // Stat 1: New documents this week
+    const newThisWeek = await Document.countDocuments({
+      ...userDocsQuery,
+      createdAt: { $gte: oneWeekAgo },
+    });
+
+    // Stat 2: Recent activity (updated documents in the last week)
+    const recentActivity = await Document.countDocuments({
+      ...userDocsQuery,
+      updatedAt: { $gte: oneWeekAgo },
+    });
+
+    // Stat 3: Unique collaborators
+    const documents = await Document.find(userDocsQuery).select(
+      "collaborators.user"
+    );
+    const collaboratorSet = new Set();
+    documents.forEach((doc) => {
+      doc.collaborators.forEach((collab) => {
+        // Don't count the user themselves as a collaborator
+        if (collab.user.toString() !== userId.toString()) {
+          collaboratorSet.add(collab.user.toString());
+        }
+      });
+    });
+    const uniqueCollaborators = collaboratorSet.size;
+
+    res.json({
+      success: true,
+      data: {
+        newThisWeek,
+        recentActivity,
+        uniqueCollaborators,
+      },
+    });
+  } catch (error) {
+    console.error("Get stats error:", error);
+    res.status(500).json({ message: "Server error while fetching stats" });
+  }
+};
 
 module.exports = {
   getDocuments,
@@ -399,4 +471,5 @@ module.exports = {
   getDocumentVersions,
   toggleLike,
   downloadDocument,
+  getStats,
 };

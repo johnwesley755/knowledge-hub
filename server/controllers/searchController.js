@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Document = require("../models/Document");
 const {
   generateEmbedding,
@@ -10,7 +11,9 @@ const {
 const textSearch = async (req, res) => {
   try {
     const { q, category, author, page = 1, limit = 10 } = req.query;
-    const skip = (page - 1) * limit;
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const skip = (pageNum - 1) * limitNum;
 
     if (!q) {
       return res.status(400).json({ message: "Search query is required" });
@@ -37,7 +40,7 @@ const textSearch = async (req, res) => {
       .populate("author", "name email avatar")
       .sort({ score: { $meta: "textScore" } })
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(limitNum);
 
     const total = await Document.countDocuments(searchQuery);
 
@@ -45,8 +48,9 @@ const textSearch = async (req, res) => {
       success: true,
       data: documents,
       pagination: {
-        page: parseInt(page),
-        pages: Math.ceil(total / limit),
+        page: pageNum,
+        limit: limitNum,
+        pages: Math.ceil(total / limitNum),
         total,
       },
     });
@@ -62,6 +66,8 @@ const textSearch = async (req, res) => {
 const semanticSearch = async (req, res) => {
   try {
     const { query, threshold = 0.7, limit = 10 } = req.body;
+    const numericThreshold = parseFloat(threshold);
+    const numericLimit = parseInt(limit, 10);
 
     if (!query) {
       return res.status(400).json({ message: "Search query is required" });
@@ -88,9 +94,9 @@ const semanticSearch = async (req, res) => {
         ...doc.toObject(),
         similarity: calculateSimilarity(queryEmbedding, doc.embedding),
       }))
-      .filter((doc) => doc.similarity >= threshold)
+      .filter((doc) => doc.similarity >= numericThreshold)
       .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, limit)
+      .slice(0, numericLimit)
       .map((doc) => {
         delete doc.embedding;
         return doc;
@@ -114,32 +120,25 @@ const getSearchSuggestions = async (req, res) => {
     const { q } = req.query;
 
     if (!q || q.length < 2) {
-      return res.json({ success: true, data: [] });
+      return res.json({ success: true, data: { tags: [], titles: [] } });
     }
+
+    const userId = new mongoose.Types.ObjectId(req.user.id);
 
     // Get tag suggestions
     const tagSuggestions = await Document.aggregate([
       {
         $match: {
           $or: [
-            { author: req.user._id },
+            { author: userId },
             { visibility: "public" },
-            { "collaborators.user": req.user._id },
+            { "collaborators.user": userId },
           ],
         },
       },
       { $unwind: "$tags" },
-      {
-        $match: {
-          tags: { $regex: q, $options: "i" },
-        },
-      },
-      {
-        $group: {
-          _id: "$tags",
-          count: { $sum: 1 },
-        },
-      },
+      { $match: { tags: { $regex: q, $options: "i" } } },
+      { $group: { _id: "$tags", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $limit: 5 },
     ]);
