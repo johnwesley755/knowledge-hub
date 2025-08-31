@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
-import Navbar from "./components/Common/Navbar";
+import Navbar from "./components/common/Navbar";
 import LoadingSpinner from "./components/Common/LoadingSpinner";
 import ProtectedRoute from "./components/Common/ProtectedRoute";
 
