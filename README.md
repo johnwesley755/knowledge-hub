@@ -349,19 +349,6 @@ We welcome contributions! Please follow these steps:
 - Update documentation as needed
 - Ensure all tests pass before submitting
 
-## 🙏 Acknowledgments
-
-- **Google Gemini AI** - For powerful AI capabilities
-- **MongoDB** - For flexible document storage
-- **React Team** - For the amazing frontend framework
-- **Node.js Community** - For excellent backend ecosystem
-
-## 📞 Support
-
-- **Documentation**: Check out our [Wiki](https://github.com/johnwesley755/knowledge-hub/wiki)
-- **Issues**: Report bugs or request features in [Issues](https://github.com/johnwesley755/knowledge-hub/issues)
-- **Discussions**: Join conversations in [Discussions](https://github.com/johnwesley755/knowledge-hub/discussions)
-
 ---
 
 <div align="center">
