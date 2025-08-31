@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  base: "/", // 👈 ensures correct base path for Vercel
+  base: "./", // 👈 important for Vercel static hosting
   server: {
     port: 3000,
     proxy: {
