@@ -7,9 +7,16 @@ require("dotenv").config();
 
 const app = express();
 const server = http.createServer(app);
+
+// Define allowed origins for CORS
+const allowedOrigins = ["http://localhost:3000"];
+if (process.env.CLIENT_URL) {
+  allowedOrigins.push(process.env.CLIENT_URL);
+}
+
 const io = socketIo(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
 });

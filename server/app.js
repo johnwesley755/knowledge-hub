@@ -19,10 +19,19 @@ module.exports = (app, io) => {
   app.use(helmet());
   app.use(compression());
 
-  // CORS
+  // Define allowed origins
+  const allowedOrigins = [
+    "http://localhost:3000", // Your local development server
+  ];
+  // Add the deployed client URL if it exists in environment variables
+  if (process.env.CLIENT_URL) {
+    allowedOrigins.push(process.env.CLIENT_URL);
+  }
+
+  // Updated CORS configuration
   app.use(
     cors({
-      origin: process.env.CLIENT_URL || "http://localhost:3000",
+      origin: allowedOrigins,
       credentials: true,
     })
   );
@@ -71,7 +80,7 @@ module.exports = (app, io) => {
     });
   });
 
-  // 404 handler (FIXED ✅)
+  // 404 handler
   app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });
   });
