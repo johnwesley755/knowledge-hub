@@ -435,25 +435,8 @@ const Register = () => {
           </form>
         </div>
 
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-xs text-gray-500">
-            By creating an account, you agree to our{" "}
-            <a
-              href="#"
-              className="text-blue-600 hover:text-blue-500 hover:underline"
-            >
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a
-              href="#"
-              className="text-blue-600 hover:text-blue-500 hover:underline"
-            >
-              Privacy Policy
-            </a>
-          </p>
-        </div>
+ 
+ 
       </div>
     </div>
   );

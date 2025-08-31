@@ -92,42 +92,42 @@ const TeamQA = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8 px-4">
-      <div className="max-w-5xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
         {/* Enhanced Header */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 backdrop-blur-sm">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
-                <Brain className="h-8 w-8 text-white" />
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 sm:p-6 lg:p-8 backdrop-blur-sm">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between space-y-6 lg:space-y-0 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg self-start">
+                <Brain className="h-6 sm:h-8 w-6 sm:w-8 text-white" />
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">
                   AI Knowledge Assistant
                 </h1>
-                <p className="text-gray-600 mt-1">
+                <p className="text-gray-600 mt-1 text-sm sm:text-base">
                   Unlock insights from your document library
                 </p>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="px-4 py-2 bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 text-sm font-semibold rounded-full border border-emerald-200 flex items-center space-x-2">
-                <Sparkles className="w-4 h-4" />
+            <div className="flex items-center justify-center sm:justify-end space-x-2">
+              <div className="px-3 sm:px-4 py-2 bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 text-xs sm:text-sm font-semibold rounded-full border border-emerald-200 flex items-center space-x-2">
+                <Sparkles className="w-3 sm:w-4 h-3 sm:h-4" />
                 <span>AI Powered</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
-            <div className="flex items-start space-x-4">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Info className="w-5 h-5 text-blue-600" />
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 sm:p-6 border border-blue-100">
+            <div className="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
+              <div className="p-2 bg-blue-100 rounded-lg self-start">
+                <Info className="w-4 sm:w-5 h-4 sm:h-5 text-blue-600" />
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
                   How it works
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
                   Ask questions about your documents and get AI-powered answers
                   based on your knowledge base. Our intelligent system searches
                   through your content to provide accurate, contextual
@@ -140,48 +140,48 @@ const TeamQA = () => {
 
         {/* Enhanced Question Input */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-          <div className="p-8">
+          <div className="p-4 sm:p-6 lg:p-8">
             <div className="flex items-center space-x-3 mb-6">
               <div className="p-2 bg-purple-100 rounded-lg">
-                <MessageCircle className="w-5 h-5 text-purple-600" />
+                <MessageCircle className="w-4 sm:w-5 h-4 sm:h-5 text-purple-600" />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
                 Ask a Question
               </h2>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Enhanced Search Mode Toggle */}
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-6">
+              <div className="flex flex-col space-y-3">
                 <div className="flex items-center space-x-2">
                   <Search className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm font-semibold text-gray-700">
+                  <span className="text-xs sm:text-sm font-semibold text-gray-700">
                     Search scope:
                   </span>
                 </div>
-                <div className="flex bg-gray-100 rounded-xl p-1 shadow-inner">
+                <div className="flex bg-gray-100 rounded-xl p-1 shadow-inner w-full">
                   <button
                     type="button"
                     onClick={() => setSearchMode("all")}
-                    className={`px-6 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex items-center space-x-2 ${
+                    className={`flex-1 px-3 sm:px-6 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 ${
                       searchMode === "all"
                         ? "bg-white text-blue-600 shadow-sm border border-blue-100"
                         : "text-gray-600 hover:text-gray-800"
                     }`}
                   >
-                    <BookOpen className="w-4 h-4" />
+                    <BookOpen className="w-3 sm:w-4 h-3 sm:h-4" />
                     <span>All Documents</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setSearchMode("document")}
-                    className={`px-6 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex items-center space-x-2 ${
+                    className={`flex-1 px-3 sm:px-6 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 ${
                       searchMode === "document"
                         ? "bg-white text-blue-600 shadow-sm border border-blue-100"
                         : "text-gray-600 hover:text-gray-800"
                     }`}
                   >
-                    <FileText className="w-4 h-4" />
+                    <FileText className="w-3 sm:w-4 h-3 sm:h-4" />
                     <span>Specific Document</span>
                   </button>
                 </div>
@@ -189,15 +189,15 @@ const TeamQA = () => {
 
               {/* Enhanced Document Selection */}
               {searchMode === "document" && (
-                <div className="bg-blue-50 rounded-xl p-6 border border-blue-100">
-                  <label className="flex items-center space-x-2 text-sm font-semibold text-gray-800 mb-3">
+                <div className="bg-blue-50 rounded-xl p-4 sm:p-6 border border-blue-100">
+                  <label className="flex items-center space-x-2 text-xs sm:text-sm font-semibold text-gray-800 mb-3">
                     <FileText className="w-4 h-4 text-blue-600" />
                     <span>Select Document</span>
                   </label>
                   <select
                     value={selectedDocument}
                     onChange={(e) => setSelectedDocument(e.target.value)}
-                    className="w-full px-4 py-3 bg-white border border-blue-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-800"
+                    className="w-full px-4 py-3 bg-white border border-blue-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-800 text-sm sm:text-base"
                   >
                     <option value="">Choose a document to search in...</option>
                     {documentsData?.map((doc) => (
@@ -212,48 +212,50 @@ const TeamQA = () => {
               {/* Enhanced Question Input */}
               <div className="relative">
                 <div className="absolute top-4 left-4 text-gray-400">
-                  <MessageSquare className="w-5 h-5" />
+                  <MessageSquare className="w-4 sm:w-5 h-4 sm:h-5" />
                 </div>
                 <textarea
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                   placeholder="What would you like to know about your documents?"
-                  className="w-full pl-14 pr-16 py-4 bg-gray-50 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all duration-200 resize-none text-gray-800"
+                  className="w-full pl-12 sm:pl-14 pr-14 sm:pr-16 py-4 bg-gray-50 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all duration-200 resize-none text-gray-800 text-sm sm:text-base"
                   rows={4}
                 />
                 <button
                   type="submit"
                   disabled={!question.trim() || askQuestionMutation.isLoading}
-                  className="absolute bottom-4 right-4 p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+                  className="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 p-2 sm:p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
                 >
                   {askQuestionMutation.isLoading ? (
                     <LoadingSpinner size="small" />
                   ) : (
-                    <Send size={18} />
+                    <Send size={16} />
                   )}
                 </button>
               </div>
 
               {/* Enhanced Example Questions */}
-              <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl p-6 border border-amber-100">
+              <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl p-4 sm:p-6 border border-amber-100">
                 <div className="flex items-center space-x-2 mb-4">
-                  <div className="p-1.5 bg-amber-100 rounded-lg">
-                    <Lightbulb className="w-4 h-4 text-amber-600" />
+                  <div className="p-1.5 bg-amber-100 rounded-lg flex-shrink-0">
+                    <Lightbulb className="w-3 sm:w-4 h-3 sm:h-4 text-amber-600" />
                   </div>
-                  <span className="text-sm font-semibold text-gray-800">
+                  <span className="text-xs sm:text-sm font-semibold text-gray-800">
                     Try these example questions:
                   </span>
                 </div>
-                <div className="grid gap-2">
+                <div className="space-y-2">
                   {exampleQuestions.map((example, index) => (
                     <button
                       key={index}
                       type="button"
                       onClick={() => setQuestion(example)}
-                      className="px-4 py-2 text-sm bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 text-left border border-gray-200 hover:border-amber-300 hover:shadow-sm flex items-center justify-between group"
+                      className="w-full px-3 sm:px-4 py-3 text-xs sm:text-sm bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 text-left border border-gray-200 hover:border-amber-300 hover:shadow-sm flex items-start justify-between group min-h-[2.5rem]"
                     >
-                      <span>{example}</span>
-                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-amber-600 transition-colors" />
+                      <span className="flex-1 min-w-0 pr-2 leading-relaxed break-words">
+                        {example}
+                      </span>
+                      <ChevronRight className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400 group-hover:text-amber-600 transition-colors flex-shrink-0 mt-0.5" />
                     </button>
                   ))}
                 </div>
@@ -265,25 +267,27 @@ const TeamQA = () => {
         {/* Enhanced Q&A History */}
         {qaHistory.length > 0 && (
           <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-            <div className="p-8 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-indigo-100 rounded-lg">
-                    <Clock className="w-5 h-5 text-indigo-600" />
+            <div className="p-4 sm:p-6 lg:p-8 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-indigo-100 rounded-lg">
+                      <Clock className="w-4 sm:w-5 h-4 sm:h-5 text-indigo-600" />
+                    </div>
+                    <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+                      Conversation History
+                    </h2>
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    Conversation History
-                  </h2>
-                  <span className="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm font-medium rounded-full">
+                  <span className="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs sm:text-sm font-medium rounded-full self-start">
                     {qaHistory.length}{" "}
                     {qaHistory.length === 1 ? "conversation" : "conversations"}
                   </span>
                 </div>
                 <button
                   onClick={clearHistory}
-                  className="inline-flex items-center space-x-2 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 font-medium rounded-lg transition-all duration-200 border border-red-200 hover:border-red-300"
+                  className="inline-flex items-center space-x-2 px-3 sm:px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 font-medium rounded-lg transition-all duration-200 border border-red-200 hover:border-red-300 text-xs sm:text-sm"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={14} />
                   <span>Clear History</span>
                 </button>
               </div>
@@ -293,25 +297,25 @@ const TeamQA = () => {
               {qaHistory.map((qa) => (
                 <div
                   key={qa.id}
-                  className="p-8 hover:bg-gray-50/50 transition-colors"
+                  className="p-4 sm:p-6 lg:p-8 hover:bg-gray-50/50 transition-colors"
                 >
                   {/* Enhanced Question */}
-                  <div className="flex items-start space-x-4 mb-6">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                      <User size={18} className="text-white" />
+                  <div className="flex items-start space-x-3 sm:space-x-4 mb-6">
+                    <div className="w-8 sm:w-10 h-8 sm:h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
+                      <User size={14} className="text-white sm:w-4 sm:h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <span className="font-semibold text-gray-900">
+                      <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3 mb-2">
+                        <span className="font-semibold text-gray-900 text-sm sm:text-base">
                           You asked
                         </span>
-                        <div className="flex items-center space-x-1 text-sm text-gray-500">
-                          <Clock size={12} />
+                        <div className="flex items-center space-x-1 text-xs sm:text-sm text-gray-500">
+                          <Clock size={10} className="sm:w-3 sm:h-3" />
                           <span>{formatRelativeTime(qa.timestamp)}</span>
                         </div>
                       </div>
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
-                        <p className="text-gray-800 leading-relaxed">
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 sm:p-4 border border-blue-100">
+                        <p className="text-gray-800 leading-relaxed text-sm sm:text-base">
                           {qa.question}
                         </p>
                       </div>
@@ -319,18 +323,18 @@ const TeamQA = () => {
                   </div>
 
                   {/* Enhanced Answer */}
-                  <div className="flex items-start space-x-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                      <Bot size={18} className="text-white" />
+                  <div className="flex items-start space-x-3 sm:space-x-4">
+                    <div className="w-8 sm:w-10 h-8 sm:h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
+                      <Bot size={14} className="text-white sm:w-4 sm:h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-3 mb-3">
-                        <span className="font-semibold text-gray-900">
+                      <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-3">
+                        <span className="font-semibold text-gray-900 text-sm sm:text-base">
                           AI Assistant
                         </span>
                         {qa.metadata?.sourceDocuments && (
-                          <div className="flex items-center space-x-2 px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full border border-green-200">
-                            <FileText size={12} />
+                          <div className="flex items-center space-x-2 px-2 sm:px-3 py-1 bg-green-100 text-green-700 text-xs sm:text-sm font-medium rounded-full border border-green-200 self-start">
+                            <FileText size={10} className="sm:w-3 sm:h-3" />
                             <span>
                               {qa.metadata.sourceDocuments.length} source
                               {qa.metadata.sourceDocuments.length !== 1
@@ -341,9 +345,9 @@ const TeamQA = () => {
                         )}
                       </div>
 
-                      <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-4 border border-emerald-100 mb-4">
+                      <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-3 sm:p-4 border border-emerald-100 mb-4">
                         <div className="prose prose-sm max-w-none">
-                          <p className="whitespace-pre-wrap text-gray-800 leading-relaxed m-0">
+                          <p className="whitespace-pre-wrap text-gray-800 leading-relaxed m-0 text-sm sm:text-base">
                             {qa.answer}
                           </p>
                         </div>
@@ -352,10 +356,10 @@ const TeamQA = () => {
                       {/* Enhanced Source Documents */}
                       {qa.metadata?.sourceDocuments &&
                         qa.metadata.sourceDocuments.length > 0 && (
-                          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                          <div className="bg-gray-50 rounded-xl p-3 sm:p-4 border border-gray-200">
                             <div className="flex items-center space-x-2 mb-3">
-                              <BookOpen className="w-4 h-4 text-gray-500" />
-                              <p className="text-sm font-semibold text-gray-700">
+                              <BookOpen className="w-3 sm:w-4 h-3 sm:h-4 text-gray-500" />
+                              <p className="text-xs sm:text-sm font-semibold text-gray-700">
                                 Referenced Documents:
                               </p>
                             </div>
@@ -364,11 +368,11 @@ const TeamQA = () => {
                                 <Link
                                   key={source.id}
                                   to={`/documents/${source.id}`}
-                                  className="flex items-center space-x-3 p-3 text-sm bg-white text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition-all duration-200 rounded-lg border border-gray-200 hover:border-blue-300 group"
+                                  className="flex items-center space-x-3 p-3 text-xs sm:text-sm bg-white text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition-all duration-200 rounded-lg border border-gray-200 hover:border-blue-300 group"
                                 >
                                   <FileText
-                                    size={16}
-                                    className="text-blue-500 flex-shrink-0"
+                                    size={14}
+                                    className="text-blue-500 flex-shrink-0 sm:w-4 sm:h-4"
                                   />
                                   <div className="flex-1 min-w-0">
                                     <span className="font-medium truncate block">
@@ -379,8 +383,8 @@ const TeamQA = () => {
                                     </span>
                                   </div>
                                   <ChevronRight
-                                    size={16}
-                                    className="text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0"
+                                    size={14}
+                                    className="text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0 sm:w-4 sm:h-4"
                                   />
                                 </Link>
                               ))}
@@ -397,29 +401,29 @@ const TeamQA = () => {
 
         {/* Enhanced Empty State */}
         {qaHistory.length === 0 && (
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-12 text-center">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8 lg:p-12 text-center">
             <div className="max-w-md mx-auto">
-              <div className="p-4 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center">
-                <MessageSquare className="h-10 w-10 text-blue-600" />
+              <div className="p-3 sm:p-4 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full w-16 sm:w-20 h-16 sm:h-20 mx-auto mb-6 flex items-center justify-center">
+                <MessageSquare className="h-8 sm:h-10 w-8 sm:w-10 text-blue-600" />
               </div>
 
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
                 Start Your First Conversation
               </h3>
-              <p className="text-gray-600 mb-8 leading-relaxed">
+              <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
                 Ask questions about your documents and get instant AI-powered
                 answers. The more specific your question, the better and more
                 accurate the answer will be.
               </p>
 
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100 text-left">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 sm:p-6 border border-blue-100 text-left">
                 <div className="flex items-center space-x-2 mb-4">
-                  <Zap className="w-5 h-5 text-blue-600" />
+                  <Zap className="w-4 sm:w-5 h-4 sm:h-5 text-blue-600" />
                   <h4 className="text-sm font-bold text-gray-800">
                     Pro Tips for Better Results:
                   </h4>
                 </div>
-                <ul className="text-sm text-gray-700 space-y-2">
+                <ul className="text-xs sm:text-sm text-gray-700 space-y-2">
                   <li className="flex items-start space-x-2">
                     <span className="text-blue-500 font-bold">•</span>
                     <span>Be specific about what you want to know</span>

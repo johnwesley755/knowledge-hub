@@ -169,7 +169,7 @@ const Dashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-indigo-50/30 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-indigo-50/30 flex items-center justify-center p-4">
         <div className="text-center">
           <LoadingSpinner size="large" />
           <p className="text-gray-600 mt-4">Loading your dashboard...</p>
@@ -180,8 +180,8 @@ const Dashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-indigo-50/30 flex items-center justify-center">
-        <div className="text-center bg-white rounded-2xl shadow-lg border border-red-100 p-8 max-w-md mx-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-indigo-50/30 flex items-center justify-center p-4">
+        <div className="text-center bg-white rounded-2xl shadow-lg border border-red-100 p-6 sm:p-8 max-w-md w-full">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <X className="h-8 w-8 text-red-600" />
           </div>
@@ -204,24 +204,24 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-indigo-50/30">
-      <div className="space-y-8 p-6">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 sm:space-y-8">
         {/* Welcome Header */}
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-white/20 p-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-white/20 p-4 sm:p-6 lg:p-8">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between space-y-4 lg:space-y-0">
             <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
                   {getGreeting()}, {user?.name}!
                 </h1>
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse hidden sm:block"></div>
               </div>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 text-sm sm:text-lg">
                 Here's what's happening with your knowledge hub today.
               </p>
-              <div className="flex items-center space-x-4 text-sm text-gray-500">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-xs sm:text-sm text-gray-500">
                 <div className="flex items-center space-x-1">
                   <Calendar className="h-4 w-4" />
-                  <span>
+                  <span className="hidden sm:inline">
                     {new Date().toLocaleDateString("en-US", {
                       weekday: "long",
                       year: "numeric",
@@ -229,13 +229,20 @@ const Dashboard = () => {
                       day: "numeric",
                     })}
                   </span>
+                  <span className="sm:hidden">
+                    {new Date().toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
                 </div>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-center sm:justify-end space-x-3">
               <Link
                 to="/documents/new"
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center space-x-2"
+                className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center space-x-2 text-sm sm:text-base"
               >
                 <Plus size={16} />
                 <span>New Document</span>
@@ -245,31 +252,31 @@ const Dashboard = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {stats.map((stat, index) => (
             <div
               key={stat.name}
-              className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-white/20 p-6 hover:shadow-lg transition-all duration-200 group"
+              className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-sm border border-white/20 p-3 sm:p-6 hover:shadow-lg transition-all duration-200 group"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
                 <div
-                  className={`${stat.bgColor} p-3 rounded-xl group-hover:scale-110 transition-transform duration-200`}
+                  className={`${stat.bgColor} p-2 sm:p-3 rounded-lg sm:rounded-xl group-hover:scale-110 transition-transform duration-200 self-start`}
                 >
                   <div
-                    className={`bg-gradient-to-r ${stat.color} w-6 h-6 rounded flex items-center justify-center`}
+                    className={`bg-gradient-to-r ${stat.color} w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center`}
                   >
-                    <stat.icon className="h-4 w-4 text-white" />
+                    <stat.icon className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-gray-600">
+                <div className="text-left sm:text-right">
+                  <p className="text-xs sm:text-sm font-medium text-gray-600">
                     {stat.name}
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900 mt-1">
                     {stat.value.toLocaleString()}
                   </p>
-                  <div className="flex items-center justify-end mt-2">
+                  <div className="flex items-center justify-start sm:justify-end mt-1 sm:mt-2">
                     <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
                       {stat.change}
                     </span>
@@ -281,24 +288,24 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
           {/* Documents Section */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="xl:col-span-2 space-y-6">
             {/* Toolbar */}
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-white/20 p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-white/20 p-4 sm:p-6">
               <div className="flex flex-col space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
-                  <div className="flex items-center space-x-4">
-                    <h2 className="text-xl font-bold text-gray-900">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between space-y-4 lg:space-y-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                       My Documents
                     </h2>
-                    <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    <span className="text-xs sm:text-sm font-medium text-gray-500 bg-gray-100 px-2 sm:px-3 py-1 rounded-full self-start">
                       {documentsData?.pagination?.total || 0} total
                     </span>
                     {hasActiveFilters && (
                       <button
                         onClick={clearFilters}
-                        className="text-xs font-medium text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded-full flex items-center space-x-1"
+                        className="text-xs font-medium text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded-full flex items-center space-x-1 self-start"
                       >
                         <X size={12} />
                         <span>Clear filters</span>
@@ -306,7 +313,7 @@ const Dashboard = () => {
                     )}
                   </div>
 
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center justify-between sm:justify-end space-x-3">
                     <button
                       onClick={() => setShowFilters(!showFilters)}
                       className={`p-2 rounded-xl transition-all duration-200 ${
@@ -327,7 +334,7 @@ const Dashboard = () => {
                             : "hover:bg-gray-50 text-gray-600"
                         }`}
                       >
-                        <Grid size={18} />
+                        <Grid size={16} />
                       </button>
                       <button
                         onClick={() => setViewMode("list")}
@@ -337,7 +344,7 @@ const Dashboard = () => {
                             : "hover:bg-gray-50 text-gray-600"
                         }`}
                       >
-                        <List size={18} />
+                        <List size={16} />
                       </button>
                     </div>
                   </div>
@@ -346,14 +353,14 @@ const Dashboard = () => {
                 {/* Filters */}
                 {showFilters && (
                   <div className="pt-4 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div className="relative">
                         <select
                           value={filters.category}
                           onChange={(e) =>
                             handleFilterChange("category", e.target.value)
                           }
-                          className="w-full pl-4 pr-10 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none"
+                          className="w-full pl-4 pr-10 py-2 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none"
                         >
                           <option value="">All Categories</option>
                           {categories.map((category) => (
@@ -371,7 +378,7 @@ const Dashboard = () => {
                           onChange={(e) =>
                             handleFilterChange("status", e.target.value)
                           }
-                          className="w-full pl-4 pr-10 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none"
+                          className="w-full pl-4 pr-10 py-2 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none"
                         >
                           <option value="">All Status</option>
                           <option value="draft">Draft</option>
@@ -381,13 +388,13 @@ const Dashboard = () => {
                         <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                       </div>
 
-                      <div className="relative">
+                      <div className="relative sm:col-span-2 lg:col-span-1">
                         <select
                           value={filters.author}
                           onChange={(e) =>
                             handleFilterChange("author", e.target.value)
                           }
-                          className="w-full pl-4 pr-10 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none"
+                          className="w-full pl-4 pr-10 py-2 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none"
                         >
                           <option value="">All Authors</option>
                           <option value={user?.id}>My Documents</option>
@@ -405,7 +412,7 @@ const Dashboard = () => {
               <div
                 className={
                   viewMode === "grid"
-                    ? "grid grid-cols-1 md:grid-cols-2 gap-6"
+                    ? "grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6"
                     : "space-y-4"
                 }
               >
@@ -420,14 +427,14 @@ const Dashboard = () => {
                 ))}
               </div>
             ) : (
-              <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-white/20 p-12 text-center">
-                <div className="w-24 h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <BookOpen className="h-12 w-12 text-gray-400" />
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-white/20 p-8 sm:p-12 text-center">
+                <div className="w-16 sm:w-24 h-16 sm:h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                  <BookOpen className="h-8 sm:h-12 w-8 sm:w-12 text-gray-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
                   No documents found
                 </h3>
-                <p className="text-gray-500 mb-8 max-w-md mx-auto">
+                <p className="text-gray-500 mb-6 sm:mb-8 max-w-md mx-auto text-sm sm:text-base">
                   {hasActiveFilters
                     ? "No documents match your current filters. Try adjusting your search criteria."
                     : "Get started by creating your first document and building your knowledge hub."}
@@ -436,14 +443,14 @@ const Dashboard = () => {
                   {hasActiveFilters && (
                     <button
                       onClick={clearFilters}
-                      className="px-6 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200 font-medium"
+                      className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200 font-medium"
                     >
                       Clear Filters
                     </button>
                   )}
                   <Link
                     to="/documents/new"
-                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center space-x-2"
+                    className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center space-x-2"
                   >
                     <Plus size={16} />
                     <span>Create Document</span>
@@ -455,9 +462,9 @@ const Dashboard = () => {
             {/* Pagination */}
             {documentsData?.pagination &&
               documentsData.pagination.pages > 1 && (
-                <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-white/20 p-6">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-white/20 p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-                    <div className="text-sm text-gray-700">
+                    <div className="text-xs sm:text-sm text-gray-700 text-center sm:text-left">
                       Showing page{" "}
                       <span className="font-semibold">
                         {documentsData.pagination.page}
@@ -466,13 +473,15 @@ const Dashboard = () => {
                       <span className="font-semibold">
                         {documentsData.pagination.pages}
                       </span>{" "}
-                      ({documentsData.pagination.total} total documents)
+                      <span className="hidden sm:inline">
+                        ({documentsData.pagination.total} total documents)
+                      </span>
                     </div>
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handlePageChange(filters.page - 1)}
                         disabled={filters.page <= 1}
-                        className="px-4 py-2 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
+                        className="px-3 sm:px-4 py-2 text-sm border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
                       >
                         Previous
                       </button>
@@ -481,7 +490,7 @@ const Dashboard = () => {
                         disabled={
                           filters.page >= documentsData.pagination.pages
                         }
-                        className="px-4 py-2 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
+                        className="px-3 sm:px-4 py-2 text-sm border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
                       >
                         Next
                       </button>
@@ -496,8 +505,8 @@ const Dashboard = () => {
             <ActivityFeed />
 
             {/* Quick Actions */}
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-white/20 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-white/20 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 Quick Actions
                 <ArrowRight className="h-4 w-4 ml-2 text-gray-400" />
               </h3>
@@ -506,22 +515,24 @@ const Dashboard = () => {
                   <Link
                     key={action.title}
                     to={action.link}
-                    className="flex items-center space-x-4 p-4 rounded-xl hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-100"
+                    className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-xl hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-100"
                   >
                     <div
                       className={`${action.bgColor} p-2 rounded-lg group-hover:scale-110 transition-transform duration-200`}
                     >
-                      <action.icon className={`h-5 w-5 ${action.color}`} />
+                      <action.icon
+                        className={`h-4 sm:h-5 w-4 sm:w-5 ${action.color}`}
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+                      <p className="text-xs sm:text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
                         {action.title}
                       </p>
                       <p className="text-xs text-gray-500 truncate">
                         {action.description}
                       </p>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all duration-200" />
+                    <ArrowRight className="h-3 sm:h-4 w-3 sm:w-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all duration-200 flex-shrink-0" />
                   </Link>
                 ))}
               </div>
