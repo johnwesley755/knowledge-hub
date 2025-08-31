@@ -20,6 +20,13 @@ import {
   Download,
   History,
   MessageSquare,
+  FileText,
+  Clock,
+  Users,
+  Tag,
+  AlertCircle,
+  ExternalLink,
+  Bookmark,
 } from "lucide-react";
 import {
   formatRelativeTime,
@@ -132,19 +139,41 @@ const DocumentView = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <LoadingSpinner size="large" />
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12">
+          <div className="flex flex-col items-center justify-center h-64">
+            <LoadingSpinner size="large" />
+            <p className="text-gray-600 mt-4 text-lg">Loading document...</p>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (error || !document) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-600">Document not found or access denied.</p>
-        <Link to="/" className="btn btn-primary mt-4">
-          Back to Dashboard
-        </Link>
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12">
+          <div className="text-center py-12">
+            <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-100 mb-6">
+              <AlertCircle className="h-10 w-10 text-red-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Document Not Found
+            </h2>
+            <p className="text-gray-600 mb-8">
+              The document you're looking for doesn't exist or you don't have
+              permission to view it.
+            </p>
+            <Link
+              to="/"
+              className="inline-flex items-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors duration-200"
+            >
+              <ArrowLeft size={18} />
+              <span>Back to Dashboard</span>
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
@@ -177,32 +206,36 @@ const DocumentView = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border mb-6">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
+    <div className="max-w-6xl mx-auto space-y-8">
+      {/* Enhanced Header */}
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-6">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+              className="flex items-center space-x-3 px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group"
             >
-              <ArrowLeft size={20} />
-              <span>Back</span>
+              <ArrowLeft
+                size={20}
+                className="group-hover:-translate-x-1 transition-transform duration-200"
+              />
+              <span className="font-medium">Back</span>
             </button>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               {canEdit && (
                 <Link
                   to={`/documents/${document._id}/edit`}
-                  className="btn btn-secondary flex items-center space-x-2"
+                  className="flex items-center space-x-2 px-4 py-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-xl font-medium transition-all duration-200 transform hover:scale-105"
                 >
                   <Edit size={16} />
                   <span>Edit</span>
                 </Link>
               )}
+
               <button
                 onClick={handleDownload}
-                className="btn btn-secondary flex items-center space-x-2"
+                className="flex items-center space-x-2 px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl font-medium transition-all duration-200 transform hover:scale-105"
               >
                 <Download size={16} />
                 <span>Download</span>
@@ -210,7 +243,11 @@ const DocumentView = () => {
 
               <button
                 onClick={handleToggleVersions}
-                className="btn btn-secondary flex items-center space-x-2"
+                className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all duration-200 transform hover:scale-105 ${
+                  showVersions
+                    ? "bg-blue-600 text-white"
+                    : "bg-blue-100 hover:bg-blue-200 text-blue-700"
+                }`}
               >
                 <History size={16} />
                 <span>Versions</span>
@@ -218,7 +255,7 @@ const DocumentView = () => {
 
               <button
                 onClick={handleShare}
-                className="btn btn-secondary flex items-center space-x-2"
+                className="flex items-center space-x-2 px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-xl font-medium transition-all duration-200 transform hover:scale-105"
               >
                 <Share2 size={16} />
                 <span>Share</span>
@@ -227,7 +264,7 @@ const DocumentView = () => {
               {isAuthor && (
                 <button
                   onClick={() => setShowDeleteModal(true)}
-                  className="btn btn-danger flex items-center space-x-2"
+                  className="flex items-center space-x-2 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-xl font-medium transition-all duration-200 transform hover:scale-105"
                 >
                   <Trash2 size={16} />
                   <span>Delete</span>
@@ -237,61 +274,72 @@ const DocumentView = () => {
           </div>
 
           {/* Document Meta */}
-          <div className="flex items-center space-x-4 mb-4">
+          <div className="flex items-center space-x-4 mb-6">
             <span
-              className={`px-3 py-1 text-sm font-medium rounded-full ${getCategoryColor(
+              className={`px-4 py-2 text-sm font-semibold rounded-full shadow-sm ${getCategoryColor(
                 document.category
-              )}`}
+              )} transition-transform hover:scale-105`}
             >
               {document.category}
             </span>
             <span
-              className={`px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(
+              className={`px-4 py-2 text-sm font-semibold rounded-full shadow-sm ${getStatusColor(
                 document.status
-              )}`}
+              )} transition-transform hover:scale-105`}
             >
               {document.status}
             </span>
-            <div className="flex items-center space-x-1 text-sm text-gray-500">
-              <Eye size={16} />
-              <span>{document.metrics?.views || 0} views</span>
+            <div className="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-full">
+              <Eye size={16} className="text-purple-500" />
+              <span className="text-sm font-medium text-gray-700">
+                {document.metrics?.views || 0} views
+              </span>
             </div>
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
             {document.title}
           </h1>
 
           {document.summary && (
-            <p className="text-lg text-gray-600 mb-6">{document.summary}</p>
+            <div className="bg-blue-50 rounded-xl p-6 mb-8 border border-blue-100">
+              <p className="text-lg text-gray-700 leading-relaxed">
+                {document.summary}
+              </p>
+            </div>
           )}
 
-          {/* Author and Date Info */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center text-white font-medium">
+          {/* Enhanced Author and Date Info */}
+          <div className="flex items-center justify-between bg-gray-50 rounded-xl p-6">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
                   {document.author.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-lg font-bold text-gray-900">
                     {document.author.name}
                   </p>
-                  <p className="text-xs text-gray-500">Author</p>
+                  <p className="text-sm text-gray-600 flex items-center space-x-1">
+                    <User size={14} />
+                    <span>Author</span>
+                  </p>
                 </div>
               </div>
 
-              <div className="h-4 border-l border-gray-300"></div>
+              <div className="w-px h-16 bg-gray-300"></div>
 
-              <div className="text-sm text-gray-500">
-                <div className="flex items-center space-x-1 mb-1">
-                  <Calendar size={14} />
-                  <span>Created {formatRelativeTime(document.createdAt)}</span>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Calendar size={16} className="text-green-500" />
+                  <span className="font-medium">
+                    Created {formatRelativeTime(document.createdAt)}
+                  </span>
                 </div>
                 {document.updatedAt !== document.createdAt && (
-                  <div className="flex items-center space-x-1">
-                    <Edit size={14} />
-                    <span>
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <Clock size={16} className="text-blue-500" />
+                    <span className="font-medium">
                       Updated {formatRelativeTime(document.updatedAt)}
                     </span>
                   </div>
@@ -301,28 +349,35 @@ const DocumentView = () => {
 
             <button
               onClick={handleLike}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex items-center space-x-3 px-6 py-3 rounded-xl font-medium transition-all duration-200 transform hover:scale-105 ${
                 isLiked
-                  ? "bg-red-50 text-red-600 border border-red-200"
-                  : "bg-gray-50 text-gray-600 border border-gray-200 hover:bg-red-50 hover:text-red-600"
+                  ? "bg-red-500 text-white shadow-lg"
+                  : "bg-white text-gray-600 border-2 border-gray-200 hover:border-red-300 hover:text-red-500"
               }`}
             >
-              <Heart size={16} fill={isLiked ? "currentColor" : "none"} />
-              <span>{document.metrics?.likes?.length || 0}</span>
+              <Heart size={20} fill={isLiked ? "currentColor" : "none"} />
+              <span className="text-lg">
+                {document.metrics?.likes?.length || 0}
+              </span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Tags */}
+      {/* Enhanced Tags Section */}
       {document.tags && document.tags.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">Tags</h3>
-          <div className="flex flex-wrap gap-2">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-blue-100 rounded-xl">
+              <Tag className="h-5 w-5 text-blue-600" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900">Tags</h3>
+          </div>
+          <div className="flex flex-wrap gap-3">
             {document.tags.map((tag, index) => (
               <span
                 key={index}
-                className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 cursor-pointer transition-colors"
+                className="px-4 py-2 text-sm bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-full hover:from-blue-100 hover:to-blue-200 hover:text-blue-700 cursor-pointer transition-all duration-200 transform hover:scale-105 font-medium"
               >
                 #{tag}
               </span>
@@ -331,14 +386,23 @@ const DocumentView = () => {
         </div>
       )}
 
-      {/* Content */}
-      <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-        <div className="prose max-w-none">
-          <div
-            style={{ whiteSpace: "pre-wrap" }}
-            className="text-gray-900 leading-relaxed"
-          >
-            {document.content}
+      {/* Enhanced Content Section */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-gray-50 px-8 py-4 border-b border-gray-200">
+          <div className="flex items-center space-x-3">
+            <FileText className="h-5 w-5 text-gray-600" />
+            <h3 className="text-lg font-semibold text-gray-900">
+              Document Content
+            </h3>
+          </div>
+        </div>
+        <div className="p-8">
+          <div className="prose prose-lg max-w-none">
+            <div
+              style={{ whiteSpace: "pre-wrap" }}
+              className="text-gray-800 leading-relaxed text-lg"
+              dangerouslySetInnerHTML={{ __html: document.content }}
+            />
           </div>
         </div>
       </div>
@@ -348,38 +412,44 @@ const DocumentView = () => {
         {showVersions && <VersionHistory documentId={document._id} />}
       </div>
 
-      {/* Collaborators */}
+      {/* Enhanced Collaborators Section */}
       {document.collaborators && document.collaborators.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Collaborators
-          </h3>
-          <div className="space-y-3">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-green-100 rounded-xl">
+              <Users className="h-6 w-6 text-green-600" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900">Collaborators</h3>
+            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+              {document.collaborators.length}
+            </span>
+          </div>
+          <div className="grid gap-4">
             {document.collaborators.map((collaborator) => (
               <div
                 key={collaborator._id}
-                className="flex items-center justify-between"
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-200 transition-colors duration-200"
               >
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                     {collaborator.user.name.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-lg font-semibold text-gray-900">
                       {collaborator.user.name}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm text-gray-600">
                       {collaborator.user.email}
                     </p>
                   </div>
                 </div>
                 <span
-                  className={`px-2 py-1 text-xs font-medium rounded-full ${
+                  className={`px-4 py-2 text-sm font-semibold rounded-full ${
                     collaborator.permissions === "admin"
-                      ? "bg-red-100 text-red-800"
+                      ? "bg-red-100 text-red-700"
                       : collaborator.permissions === "edit"
-                      ? "bg-blue-100 text-blue-800"
-                      : "bg-gray-100 text-gray-800"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-gray-100 text-gray-700"
                   }`}
                 >
                   {collaborator.permissions}
@@ -390,50 +460,75 @@ const DocumentView = () => {
         </div>
       )}
 
-      {/* Q&A Section */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Ask Questions</h3>
-          <MessageSquare className="h-5 w-5 text-gray-400" />
+      {/* Enhanced Q&A Section */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-sm border border-blue-100 p-8">
+        <div className="flex items-center space-x-4 mb-6">
+          <div className="p-3 bg-blue-100 rounded-xl">
+            <MessageSquare className="h-7 w-7 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900">Ask Questions</h3>
+            <p className="text-gray-600">
+              Get instant answers from our AI assistant
+            </p>
+          </div>
         </div>
-        <p className="text-gray-600 mb-4">
-          Have questions about this document? Ask our AI assistant for quick
-          answers.
+        <p className="text-gray-700 mb-8 text-lg leading-relaxed">
+          Have questions about this document? Our AI assistant can help you
+          understand the content, find specific information, or clarify complex
+          topics instantly.
         </p>
         <Link
           to={`/qa?document=${document._id}`}
-          className="btn btn-primary flex items-center space-x-2 w-full sm:w-auto justify-center"
+          className="inline-flex items-center space-x-3 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
         >
-          <MessageSquare size={16} />
+          <MessageSquare size={20} />
           <span>Ask Questions</span>
+          <ExternalLink size={16} />
         </Link>
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* Enhanced Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              Delete Document
-            </h3>
-            <p className="text-sm text-gray-500 mb-6">
-              Are you sure you want to delete "{document.title}"? This action
-              cannot be undone.
-            </p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="btn btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleteDocument.isLoading}
-                className="btn btn-danger"
-              >
-                {deleteDocument.isLoading ? "Deleting..." : "Delete"}
-              </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-gray-100 animate-in zoom-in-95 duration-200">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-6">
+                <Trash2 className="h-8 w-8 text-red-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Delete Document
+              </h3>
+              <p className="text-gray-600 mb-8 leading-relaxed">
+                Are you sure you want to delete{" "}
+                <span className="font-semibold text-gray-900">
+                  "{document.title}"
+                </span>
+                ? This action cannot be undone and will permanently remove the
+                document and all its data.
+              </p>
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-medium transition-colors duration-200 min-w-[100px]"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleteDocument.isLoading}
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-xl font-medium transition-colors duration-200 min-w-[100px] flex items-center justify-center"
+                >
+                  {deleteDocument.isLoading ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Deleting...</span>
+                    </div>
+                  ) : (
+                    "Delete"
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
