@@ -32,7 +32,7 @@ const Dashboard = () => {
     limit: 12,
     category: "",
     status: "",
-    author: "",
+    author: "", // Initially empty, will be set by useEffect
   });
   const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'list'
   const [showFilters, setShowFilters] = useState(false);
@@ -43,6 +43,17 @@ const Dashboard = () => {
   });
 
   const { data: documentsData, isLoading, error } = useDocuments(filters);
+
+  // **FIX 1: Set the default author filter to the current user once user data is available.**
+  // This ensures the initial API call fetches only the user's documents.
+  useEffect(() => {
+    if (user?.id && filters.author === "") {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        author: user.id,
+      }));
+    }
+  }, [user, filters.author]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -148,17 +159,19 @@ const Dashboard = () => {
     }));
   };
 
+  // **FIX 2: Update clearFilters to reset to the new default view ("My Documents").**
   const clearFilters = () => {
     setFilters({
       page: 1,
       limit: 12,
       category: "",
       status: "",
-      author: "",
+      author: user?.id || "", // Reset to current user's documents
     });
   };
 
-  const hasActiveFilters = filters.category || filters.status || filters.author;
+  const hasActiveFilters =
+    filters.category || filters.status || filters.author !== user?.id;
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -167,7 +180,7 @@ const Dashboard = () => {
     return "Good evening";
   };
 
-  if (isLoading) {
+  if (isLoading && !documentsData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-indigo-50/30 flex items-center justify-center p-4">
         <div className="text-center">
@@ -389,6 +402,7 @@ const Dashboard = () => {
                       </div>
 
                       <div className="relative sm:col-span-2 lg:col-span-1">
+                        {/* **FIX 3: Clarify labels and ensure values are correct.** */}
                         <select
                           value={filters.author}
                           onChange={(e) =>
@@ -396,8 +410,8 @@ const Dashboard = () => {
                           }
                           className="w-full pl-4 pr-10 py-2 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none"
                         >
-                          <option value="">All Authors</option>
                           <option value={user?.id}>My Documents</option>
+                          <option value="">All Accessible Documents</option>
                         </select>
                         <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                       </div>

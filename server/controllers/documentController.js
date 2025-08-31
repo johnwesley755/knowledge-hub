@@ -10,6 +10,9 @@ const PDFDocument = require("pdfkit");
 // @desc    Get all documents
 // @route   GET /api/documents
 // @access  Private
+// @desc    Get all documents
+// @route   GET /api/documents
+// @access  Private
 const getDocuments = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -72,9 +75,9 @@ const getDocument = async (req, res) => {
 
     // Check permissions
     const hasAccess =
-      document.author._id.toString() === req.user.id ||
+      document.author._id.toString() === req.user.id.toString() ||
       document.visibility === "public" ||
-      document.collaborators.some((c) => c.user._id.toString() === req.user.id);
+      document.collaborators.some((c) => c.user._id.toString() === req.user.id.toString());
 
     if (!hasAccess) {
       return res.status(403).json({ message: "Access denied" });

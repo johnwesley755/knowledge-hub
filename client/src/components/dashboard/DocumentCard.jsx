@@ -29,13 +29,13 @@ const DocumentCard = ({ document, viewMode = "grid" }) => {
   const deleteDocument = useDeleteDocument();
   const toggleLike = useToggleLike();
 
-  const isAuthor = document.author._id === user?.id;
-  const isLiked = document.metrics?.likes?.includes(user?.id);
+  const isAuthor = document.author._id.toString() === user?.id.toString();
+  const isLiked = document.metrics?.likes?.some(id => id.toString() === user?.id.toString());
   const canEdit =
     isAuthor ||
     document.collaborators?.some(
       (c) =>
-        c.user._id === user?.id && ["edit", "admin"].includes(c.permissions)
+        c.user._id.toString() === user?.id.toString() && ["edit", "admin"].includes(c.permissions)
     );
 
   const handleDelete = async () => {
