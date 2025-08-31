@@ -8,7 +8,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       "/api": {
-        target: "https://knowledge-hub-kk06.onrender.com",
+        target: "https://knowledge-hub-kk06.onrender.com/",
         changeOrigin: true,
       },
     },
