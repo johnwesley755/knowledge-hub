@@ -1,13 +1,13 @@
-const handlePreferenceChange = (e) => {
-  const { name, checked } = e.target;
-  setFormData((prev) => ({
-    ...prev,
-    preferences: {
-      ...prev.preferences,
-      [name]: checked,
-    },
-  }));
-};
+// const handlePreferenceChange = (e) => {
+//   const { name, checked } = e.target;
+//   setFormData((prev) => ({
+//     ...prev,
+//     preferences: {
+//       ...prev.preferences,
+//       [name]: checked,
+//     },
+//   }));
+// };
 import React, { useState, useEffect } from "react";
 import { authAPI } from "../../services/api";
 import LoadingSpinner from "../Common/LoadingSpinner";
@@ -62,16 +62,16 @@ const Profile = () => {
     }));
   };
 
-  const handlePreferenceChange = (e) => {
-    const { name, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      preferences: {
-        ...prev.preferences,
-        [name]: checked,
-      },
-    }));
-  };
+  // const handlePreferenceChange = (e) => {
+  //   const { name, checked } = e.target;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     preferences: {
+  //       ...prev.preferences,
+  //       [name]: checked,
+  //     },
+  //   }));
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

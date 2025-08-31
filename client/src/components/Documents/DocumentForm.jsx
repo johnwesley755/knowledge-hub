@@ -224,18 +224,18 @@ const DocumentForm = () => {
     "Other",
   ];
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case "draft":
-        return <Clock className="h-4 w-4 text-yellow-500" />;
-      case "published":
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case "archived":
-        return <AlertCircle className="h-4 w-4 text-gray-500" />;
-      default:
-        return <FileText className="h-4 w-4 text-gray-500" />;
-    }
-  };
+  // const getStatusIcon = (status) => {
+  //   switch (status) {
+  //     case "draft":
+  //       return <Clock className="h-4 w-4 text-yellow-500" />;
+  //     case "published":
+  //       return <CheckCircle className="h-4 w-4 text-green-500" />;
+  //     case "archived":
+  //       return <AlertCircle className="h-4 w-4 text-gray-500" />;
+  //     default:
+  //       return <FileText className="h-4 w-4 text-gray-500" />;
+  //   }
+  // };
 
   if (isEditing && loadingDocument) {
     return (
