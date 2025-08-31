@@ -6,7 +6,7 @@ import {
   useUpdateDocument,
   useDocument,
 } from "../../hooks/useDocuments";
-import LoadingSpinner from "../Common/LoadingSpinner";
+import LoadingSpinner from "../common/LoadingSpinner";
 import {
   Save,
   X,

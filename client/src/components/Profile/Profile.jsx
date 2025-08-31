@@ -10,7 +10,7 @@
 // };
 import React, { useState, useEffect } from "react";
 import { authAPI } from "../../services/api";
-import LoadingSpinner from "../Common/LoadingSpinner";
+import LoadingSpinner from "../common/LoadingSpinner";
 import {
   User,
   Mail,

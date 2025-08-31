@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import LoadingSpinner from "../Common/LoadingSpinner";
+import LoadingSpinner from "../common/LoadingSpinner";
 import {
   Brain,
   Eye,

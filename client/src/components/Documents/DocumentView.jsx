@@ -6,7 +6,7 @@ import {
   useDeleteDocument,
 } from "../../hooks/useDocuments";
 import { useAuth } from "../../hooks/useAuth";
-import LoadingSpinner from "../Common/LoadingSpinner";
+import LoadingSpinner from "../common/LoadingSpinner";
 import VersionHistory from "./VersionHistory";
 import {
   ArrowLeft,

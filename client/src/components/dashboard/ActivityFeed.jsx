@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
 import { documentsAPI } from "../../services/api";
 import { formatRelativeTime } from "../../utils/helpers";
-import LoadingSpinner from "../Common/LoadingSpinner";
+import LoadingSpinner from "../common/LoadingSpinner";
 import {
   FileText,
   Edit,

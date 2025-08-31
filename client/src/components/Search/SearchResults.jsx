@@ -18,7 +18,7 @@ import {
   getCategoryColor,
   truncateText,
 } from "../../utils/helpers.js";
-import LoadingSpinner from "../Common/LoadingSpinner.jsx";
+import LoadingSpinner from "../common/LoadingSpinner.jsx";
 
 const SearchResults = ({
   results,

@@ -6,7 +6,7 @@ import { documentsAPI } from "../../services/api.js";
 
 import DocumentCard from "./DocumentCard.jsx";
 import ActivityFeed from "./ActivityFeed.jsx";
-import LoadingSpinner from "../Common/LoadingSpinner.jsx";
+import LoadingSpinner from "../common/LoadingSpinner.jsx";
 import {
   Plus,
   Filter,

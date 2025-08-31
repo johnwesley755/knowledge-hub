@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { qaAPI, documentsAPI } from "../../services/api.js";
-import LoadingSpinner from "../Common/LoadingSpinner.jsx";
+import LoadingSpinner from "../common/LoadingSpinner.jsx";
 import {
   MessageSquare,
   Send,
@@ -18,7 +18,7 @@ import {
   MessageCircle,
   ChevronRight,
   Info,
-  Zap
+  Zap,
 } from "lucide-react";
 import { formatRelativeTime } from "../../utils/helpers.js";
 import toast from "react-hot-toast";
@@ -102,8 +102,12 @@ const TeamQA = () => {
                 <Brain className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">AI Knowledge Assistant</h1>
-                <p className="text-gray-600 mt-1">Unlock insights from your document library</p>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  AI Knowledge Assistant
+                </h1>
+                <p className="text-gray-600 mt-1">
+                  Unlock insights from your document library
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -113,17 +117,21 @@ const TeamQA = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-blue-100 rounded-lg">
                 <Info className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">How it works</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">
+                  How it works
+                </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  Ask questions about your documents and get AI-powered answers based on your knowledge base. 
-                  Our intelligent system searches through your content to provide accurate, contextual responses.
+                  Ask questions about your documents and get AI-powered answers
+                  based on your knowledge base. Our intelligent system searches
+                  through your content to provide accurate, contextual
+                  responses.
                 </p>
               </div>
             </div>
@@ -137,7 +145,9 @@ const TeamQA = () => {
               <div className="p-2 bg-purple-100 rounded-lg">
                 <MessageCircle className="w-5 h-5 text-purple-600" />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900">Ask a Question</h2>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Ask a Question
+              </h2>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -145,7 +155,9 @@ const TeamQA = () => {
               <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-6">
                 <div className="flex items-center space-x-2">
                   <Search className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm font-semibold text-gray-700">Search scope:</span>
+                  <span className="text-sm font-semibold text-gray-700">
+                    Search scope:
+                  </span>
                 </div>
                 <div className="flex bg-gray-100 rounded-xl p-1 shadow-inner">
                   <button
@@ -228,7 +240,9 @@ const TeamQA = () => {
                   <div className="p-1.5 bg-amber-100 rounded-lg">
                     <Lightbulb className="w-4 h-4 text-amber-600" />
                   </div>
-                  <span className="text-sm font-semibold text-gray-800">Try these example questions:</span>
+                  <span className="text-sm font-semibold text-gray-800">
+                    Try these example questions:
+                  </span>
                 </div>
                 <div className="grid gap-2">
                   {exampleQuestions.map((example, index) => (
@@ -257,9 +271,12 @@ const TeamQA = () => {
                   <div className="p-2 bg-indigo-100 rounded-lg">
                     <Clock className="w-5 h-5 text-indigo-600" />
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-900">Conversation History</h2>
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Conversation History
+                  </h2>
                   <span className="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm font-medium rounded-full">
-                    {qaHistory.length} {qaHistory.length === 1 ? 'conversation' : 'conversations'}
+                    {qaHistory.length}{" "}
+                    {qaHistory.length === 1 ? "conversation" : "conversations"}
                   </span>
                 </div>
                 <button
@@ -274,7 +291,10 @@ const TeamQA = () => {
 
             <div className="divide-y divide-gray-100">
               {qaHistory.map((qa) => (
-                <div key={qa.id} className="p-8 hover:bg-gray-50/50 transition-colors">
+                <div
+                  key={qa.id}
+                  className="p-8 hover:bg-gray-50/50 transition-colors"
+                >
                   {/* Enhanced Question */}
                   <div className="flex items-start space-x-4 mb-6">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
@@ -282,14 +302,18 @@ const TeamQA = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-3 mb-2">
-                        <span className="font-semibold text-gray-900">You asked</span>
+                        <span className="font-semibold text-gray-900">
+                          You asked
+                        </span>
                         <div className="flex items-center space-x-1 text-sm text-gray-500">
                           <Clock size={12} />
                           <span>{formatRelativeTime(qa.timestamp)}</span>
                         </div>
                       </div>
                       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
-                        <p className="text-gray-800 leading-relaxed">{qa.question}</p>
+                        <p className="text-gray-800 leading-relaxed">
+                          {qa.question}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -301,17 +325,22 @@ const TeamQA = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-3 mb-3">
-                        <span className="font-semibold text-gray-900">AI Assistant</span>
+                        <span className="font-semibold text-gray-900">
+                          AI Assistant
+                        </span>
                         {qa.metadata?.sourceDocuments && (
                           <div className="flex items-center space-x-2 px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full border border-green-200">
                             <FileText size={12} />
                             <span>
-                              {qa.metadata.sourceDocuments.length} source{qa.metadata.sourceDocuments.length !== 1 ? 's' : ''}
+                              {qa.metadata.sourceDocuments.length} source
+                              {qa.metadata.sourceDocuments.length !== 1
+                                ? "s"
+                                : ""}
                             </span>
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-4 border border-emerald-100 mb-4">
                         <div className="prose prose-sm max-w-none">
                           <p className="whitespace-pre-wrap text-gray-800 leading-relaxed m-0">
@@ -321,32 +350,43 @@ const TeamQA = () => {
                       </div>
 
                       {/* Enhanced Source Documents */}
-                      {qa.metadata?.sourceDocuments && qa.metadata.sourceDocuments.length > 0 && (
-                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                          <div className="flex items-center space-x-2 mb-3">
-                            <BookOpen className="w-4 h-4 text-gray-500" />
-                            <p className="text-sm font-semibold text-gray-700">
-                              Referenced Documents:
-                            </p>
+                      {qa.metadata?.sourceDocuments &&
+                        qa.metadata.sourceDocuments.length > 0 && (
+                          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                            <div className="flex items-center space-x-2 mb-3">
+                              <BookOpen className="w-4 h-4 text-gray-500" />
+                              <p className="text-sm font-semibold text-gray-700">
+                                Referenced Documents:
+                              </p>
+                            </div>
+                            <div className="grid gap-2">
+                              {qa.metadata.sourceDocuments.map((source) => (
+                                <Link
+                                  key={source.id}
+                                  to={`/documents/${source.id}`}
+                                  className="flex items-center space-x-3 p-3 text-sm bg-white text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition-all duration-200 rounded-lg border border-gray-200 hover:border-blue-300 group"
+                                >
+                                  <FileText
+                                    size={16}
+                                    className="text-blue-500 flex-shrink-0"
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <span className="font-medium truncate block">
+                                      {source.title}
+                                    </span>
+                                    <span className="text-gray-500 text-xs">
+                                      by {source.author}
+                                    </span>
+                                  </div>
+                                  <ChevronRight
+                                    size={16}
+                                    className="text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0"
+                                  />
+                                </Link>
+                              ))}
+                            </div>
                           </div>
-                          <div className="grid gap-2">
-                            {qa.metadata.sourceDocuments.map((source) => (
-                              <Link
-                                key={source.id}
-                                to={`/documents/${source.id}`}
-                                className="flex items-center space-x-3 p-3 text-sm bg-white text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition-all duration-200 rounded-lg border border-gray-200 hover:border-blue-300 group"
-                              >
-                                <FileText size={16} className="text-blue-500 flex-shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                  <span className="font-medium truncate block">{source.title}</span>
-                                  <span className="text-gray-500 text-xs">by {source.author}</span>
-                                </div>
-                                <ChevronRight size={16} className="text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </div>
                 </div>
@@ -362,19 +402,22 @@ const TeamQA = () => {
               <div className="p-4 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center">
                 <MessageSquare className="h-10 w-10 text-blue-600" />
               </div>
-              
+
               <h3 className="text-2xl font-bold text-gray-900 mb-3">
                 Start Your First Conversation
               </h3>
               <p className="text-gray-600 mb-8 leading-relaxed">
-                Ask questions about your documents and get instant AI-powered answers. 
-                The more specific your question, the better and more accurate the answer will be.
+                Ask questions about your documents and get instant AI-powered
+                answers. The more specific your question, the better and more
+                accurate the answer will be.
               </p>
 
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100 text-left">
                 <div className="flex items-center space-x-2 mb-4">
                   <Zap className="w-5 h-5 text-blue-600" />
-                  <h4 className="text-sm font-bold text-gray-800">Pro Tips for Better Results:</h4>
+                  <h4 className="text-sm font-bold text-gray-800">
+                    Pro Tips for Better Results:
+                  </h4>
                 </div>
                 <ul className="text-sm text-gray-700 space-y-2">
                   <li className="flex items-start space-x-2">

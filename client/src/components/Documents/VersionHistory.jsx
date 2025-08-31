@@ -1,5 +1,5 @@
 import { useDocumentVersions } from "../../hooks/useDocuments";
-import LoadingSpinner from "../Common/LoadingSpinner";
+import LoadingSpinner from "../common/LoadingSpinner";
 import { formatRelativeTime } from "../../utils/helpers";
 import {
   Clock,

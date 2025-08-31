@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { clsx } from "clsx";
-import LoadingSpinner from "../Common/LoadingSpinner";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const Button = forwardRef(
   (
