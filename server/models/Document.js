@@ -93,10 +93,12 @@ const documentSchema = new mongoose.Schema(
 );
 
 // Indexes for better search performance
-documentSchema.index({ title: "text", content: "text", tags: "text" });
+documentSchema.index({ title: "text", content: "text", summary: "text" });
 documentSchema.index({ author: 1, createdAt: -1 });
 documentSchema.index({ tags: 1 });
 documentSchema.index({ category: 1 });
 documentSchema.index({ "collaborators.user": 1 });
+documentSchema.index({ visibility: 1 });
+documentSchema.index({ status: 1 });
 
 module.exports = mongoose.model("Document", documentSchema);

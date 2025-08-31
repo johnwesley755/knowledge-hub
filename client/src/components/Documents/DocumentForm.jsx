@@ -7,8 +7,83 @@ import {
   useDocument,
 } from "../../hooks/useDocuments";
 import LoadingSpinner from "../Common/LoadingSpinner";
-import { Save, X, Eye, FileText } from "lucide-react";
+import {
+  Save,
+  X,
+  Eye,
+  Bold,
+  Italic,
+  Strikethrough,
+  Heading2,
+  List,
+  ListOrdered,
+} from "lucide-react";
 import toast from "react-hot-toast";
+
+// ** NEW: Import Tiptap dependencies
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+
+// ** NEW: A simple toolbar component for Tiptap
+const EditorToolbar = ({ editor }) => {
+  if (!editor) {
+    return null;
+  }
+
+  // A helper function to create toolbar buttons
+  const ToolbarButton = ({ onClick, isActive, children }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`p-2 rounded-md hover:bg-gray-200 transition-colors ${
+        isActive ? "is-active" : "text-gray-600"
+      }`}
+    >
+      {children}
+    </button>
+  );
+
+  return (
+    <div className="flex items-center flex-wrap gap-1 p-2 border border-b-0 border-gray-300 rounded-t-lg bg-gray-50">
+      <ToolbarButton
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        isActive={editor.isActive("bold")}
+      >
+        <Bold size={18} />
+      </ToolbarButton>
+      <ToolbarButton
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        isActive={editor.isActive("italic")}
+      >
+        <Italic size={18} />
+      </ToolbarButton>
+      <ToolbarButton
+        onClick={() => editor.chain().focus().toggleStrike().run()}
+        isActive={editor.isActive("strike")}
+      >
+        <Strikethrough size={18} />
+      </ToolbarButton>
+      <ToolbarButton
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+        isActive={editor.isActive("heading", { level: 2 })}
+      >
+        <Heading2 size={18} />
+      </ToolbarButton>
+      <ToolbarButton
+        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        isActive={editor.isActive("bulletList")}
+      >
+        <List size={18} />
+      </ToolbarButton>
+      <ToolbarButton
+        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+        isActive={editor.isActive("orderedList")}
+      >
+        <ListOrdered size={18} />
+      </ToolbarButton>
+    </div>
+  );
+};
 
 const DocumentForm = () => {
   const { id } = useParams();
@@ -41,29 +116,46 @@ const DocumentForm = () => {
 
   const content = watch("content");
 
-  // Update word count when content changes
-  useEffect(() => {
-    if (content) {
-      const words = content
-        .trim()
-        .split(/\s+/)
-        .filter((word) => word.length > 0);
-      setWordCount(words.length);
-    } else {
-      setWordCount(0);
-    }
-  }, [content]);
+  // ** NEW: Setup Tiptap editor instance
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: content || "",
+    editorProps: {
+      attributes: {
+        // Add Tailwind typography classes for beautiful default styling
+        class: "prose max-w-none min-h-[400px]",
+      },
+    },
+    onUpdate({ editor }) {
+      // Sync Tiptap content with React Hook Form
+      const html = editor.getHTML();
+      setValue("content", html, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
 
-  // Populate form with document data when editing
+      // Update word count from editor's text content
+      const text = editor.getText();
+      const words = text.trim().split(/\s+/).filter(Boolean);
+      setWordCount(words.length);
+    },
+  });
+
+  // ** UPDATED: Populate form and Tiptap editor when editing
   useEffect(() => {
-    if (isEditing && document) {
+    if (isEditing && document && editor) {
       setValue("title", document.title);
-      setValue("content", document.content);
       setValue("category", document.category);
       setValue("visibility", document.visibility);
       setValue("status", document.status);
+      setValue("content", document.content);
+
+      // Use a timeout to ensure the editor is ready for content
+      setTimeout(() => {
+        editor.commands.setContent(document.content);
+      }, 0);
     }
-  }, [document, isEditing, setValue]);
+  }, [document, isEditing, setValue, editor]);
 
   const onSubmit = async (data) => {
     try {
@@ -82,10 +174,13 @@ const DocumentForm = () => {
 
   const handleCancel = () => {
     if (isDirty) {
-      const confirmed = window.confirm(
-        "You have unsaved changes. Are you sure you want to leave?"
-      );
-      if (!confirmed) return;
+      if (
+        !window.confirm(
+          "You have unsaved changes. Are you sure you want to leave?"
+        )
+      ) {
+        return;
+      }
     }
     navigate(-1);
   };
@@ -110,7 +205,6 @@ const DocumentForm = () => {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="bg-white rounded-lg shadow-sm border">
-        {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div>
@@ -123,10 +217,8 @@ const DocumentForm = () => {
                   : "Create a new document with AI-powered features"}
               </p>
             </div>
-
             <div className="flex items-center space-x-3">
               <div className="text-sm text-gray-500">{wordCount} words</div>
-
               <button
                 type="button"
                 onClick={() => setIsPreviewMode(!isPreviewMode)}
@@ -144,7 +236,6 @@ const DocumentForm = () => {
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="p-6 space-y-6">
-            {/* Title */}
             <div>
               <label
                 htmlFor="title"
@@ -162,11 +253,7 @@ const DocumentForm = () => {
                     message: "Title must be less than 200 characters",
                   },
                 })}
-                className={`input ${
-                  errors.title
-                    ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                    : ""
-                }`}
+                className={`input ${errors.title ? "border-red-300" : ""}`}
                 placeholder="Enter document title"
               />
               {errors.title && (
@@ -176,8 +263,8 @@ const DocumentForm = () => {
               )}
             </div>
 
-            {/* Metadata Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Metadata fields remain the same */}
               <div>
                 <label
                   htmlFor="category"
@@ -204,7 +291,6 @@ const DocumentForm = () => {
                   </p>
                 )}
               </div>
-
               <div>
                 <label
                   htmlFor="visibility"
@@ -222,7 +308,6 @@ const DocumentForm = () => {
                   <option value="public">Public</option>
                 </select>
               </div>
-
               <div>
                 <label
                   htmlFor="status"
@@ -238,60 +323,30 @@ const DocumentForm = () => {
               </div>
             </div>
 
-            {/* Content */}
             <div>
-              <label
-                htmlFor="content"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Content *
               </label>
-
               {isPreviewMode ? (
-                <div className="min-h-96 p-4 border border-gray-300 rounded-lg bg-gray-50">
-                  <div className="prose max-w-none">
-                    {content ? (
-                      <div style={{ whiteSpace: "pre-wrap" }}>{content}</div>
-                    ) : (
-                      <p className="text-gray-500 italic">
-                        No content to preview
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <textarea
-                  id="content"
-                  rows={20}
-                  {...register("content", {
-                    required: "Content is required",
-                    minLength: {
-                      value: 10,
-                      message: "Content must be at least 10 characters",
-                    },
-                  })}
-                  className={`input resize-none ${
-                    errors.content
-                      ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                      : ""
-                  }`}
-                  placeholder="Start writing your document content here..."
+                <div
+                  className="prose max-w-none p-4 border rounded-lg bg-gray-50 min-h-[460px]"
+                  dangerouslySetInnerHTML={{
+                    __html: content || "<p>No content to preview</p>",
+                  }}
                 />
+              ) : (
+                <div>
+                  <EditorToolbar editor={editor} />
+                  <EditorContent editor={editor} className="tiptap" />
+                </div>
               )}
-
               {errors.content && (
                 <p className="mt-1 text-sm text-red-600">
                   {errors.content.message}
                 </p>
               )}
-
-              <p className="mt-2 text-sm text-gray-500">
-                AI will automatically generate a summary and relevant tags when
-                you save the document.
-              </p>
             </div>
 
-            {/* Change Description (for editing) */}
             {isEditing && (
               <div>
                 <label
@@ -314,18 +369,16 @@ const DocumentForm = () => {
             )}
           </div>
 
-          {/* Footer */}
           <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-500">
+              <div>
                 {isDirty && (
-                  <span className="flex items-center space-x-1">
+                  <span className="flex items-center space-x-1 text-sm text-gray-500">
                     <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
                     <span>Unsaved changes</span>
                   </span>
                 )}
               </div>
-
               <div className="flex items-center space-x-3">
                 <button
                   type="button"
@@ -335,7 +388,6 @@ const DocumentForm = () => {
                   <X size={16} />
                   <span>Cancel</span>
                 </button>
-
                 <button
                   type="submit"
                   disabled={

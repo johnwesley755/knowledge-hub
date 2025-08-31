@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,6 +6,7 @@
 @layer base {
   body {
     @apply bg-gray-50 text-gray-900;
+    font-family: 'Inter', sans-serif;
   }
 }
 
@@ -79,4 +81,23 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+/* Style for ReactQuill editor when there's a validation error */
+.ql-error .ql-toolbar,
+.ql-error .ql-container {
+  border-color: #fca5a5 !important;
+  /* Tailwind's red-300 */
+}
+/* Custom styles for the Tiptap editor */
+.tiptap {
+  @apply prose max-w-none p-4 rounded-b-lg border border-gray-300;
+}
+
+.tiptap:focus {
+  @apply outline-none ring-2 ring-primary-500 border-primary-500;
+}
+
+/* Style for the active toolbar button */
+.toolbar-button.is-active {
+  @apply bg-primary-100 text-primary-700;
 }

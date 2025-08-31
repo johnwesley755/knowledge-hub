@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const Document = require("../models/Document");
 const {
   generateEmbedding,
@@ -11,52 +10,73 @@ const {
 const textSearch = async (req, res) => {
   try {
     const { q, category, author, page = 1, limit = 10 } = req.query;
-    const pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
-    const skip = (pageNum - 1) * limitNum;
+    const skip = (page - 1) * limit;
 
-    if (!q) {
-      return res.status(400).json({ message: "Search query is required" });
+    if (!q || q.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Search query is required",
+      });
     }
 
     // Build search query
     let searchQuery = {
-      $text: { $search: q },
+      $or: [
+        { title: { $regex: q, $options: "i" } },
+        { content: { $regex: q, $options: "i" } },
+        { summary: { $regex: q, $options: "i" } },
+        { tags: { $in: [new RegExp(q, "i")] } },
+      ],
     };
 
     // Add user access filters
-    searchQuery.$or = [
-      { author: req.user.id },
-      { visibility: "public" },
-      { "collaborators.user": req.user.id },
-    ];
+    const accessFilter = {
+      $or: [
+        { author: req.user.id },
+        { visibility: "public" },
+        { "collaborators.user": req.user.id },
+      ],
+    };
 
-    if (category) searchQuery.category = category;
-    if (author) searchQuery.author = author;
+    // Combine search and access filters
+    const finalQuery = {
+      $and: [searchQuery, accessFilter],
+    };
 
-    const documents = await Document.find(searchQuery, {
-      score: { $meta: "textScore" },
-    })
+    // Add additional filters
+    if (category) {
+      finalQuery.category = category;
+    }
+    if (author) {
+      finalQuery.author = author;
+    }
+
+    // Execute search
+    const documents = await Document.find(finalQuery)
       .populate("author", "name email avatar")
-      .sort({ score: { $meta: "textScore" } })
+      .populate("collaborators.user", "name email avatar")
+      .sort({ updatedAt: -1 })
       .skip(skip)
-      .limit(limitNum);
+      .limit(parseInt(limit));
 
-    const total = await Document.countDocuments(searchQuery);
+    const total = await Document.countDocuments(finalQuery);
 
     res.json({
       success: true,
       data: documents,
       pagination: {
-        page: pageNum,
-        limit: limitNum,
-        pages: Math.ceil(total / limitNum),
+        page: parseInt(page),
+        pages: Math.ceil(total / limit),
         total,
+        limit: parseInt(limit),
       },
     });
   } catch (error) {
     console.error("Text search error:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Server error during search",
+    });
   }
 };
 
@@ -66,49 +86,62 @@ const textSearch = async (req, res) => {
 const semanticSearch = async (req, res) => {
   try {
     const { query, threshold = 0.7, limit = 10 } = req.body;
-    const numericThreshold = parseFloat(threshold);
-    const numericLimit = parseInt(limit, 10);
 
-    if (!query) {
-      return res.status(400).json({ message: "Search query is required" });
+    if (!query || query.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Search query is required",
+      });
     }
 
     // Generate embedding for search query
-    const queryEmbedding = await generateEmbedding(query);
+    const queryEmbedding = await generateEmbedding(query.trim());
 
     // Get all documents with embeddings that user can access
-    const documents = await Document.find({
-      embedding: { $exists: true },
+    const accessFilter = {
       $or: [
         { author: req.user.id },
         { visibility: "public" },
         { "collaborators.user": req.user.id },
       ],
+    };
+
+    const documents = await Document.find({
+      ...accessFilter,
+      embedding: { $exists: true, $ne: null },
     })
       .populate("author", "name email avatar")
+      .populate("collaborators.user", "name email avatar")
       .select("+embedding");
 
     // Calculate similarities
     const results = documents
-      .map((doc) => ({
-        ...doc.toObject(),
-        similarity: calculateSimilarity(queryEmbedding, doc.embedding),
-      }))
-      .filter((doc) => doc.similarity >= numericThreshold)
-      .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, numericLimit)
       .map((doc) => {
-        delete doc.embedding;
-        return doc;
-      });
+        const similarity = calculateSimilarity(queryEmbedding, doc.embedding);
+        const docObject = doc.toObject();
+        delete docObject.embedding; // Remove embedding from response
+        return {
+          ...docObject,
+          similarity,
+        };
+      })
+      .filter((doc) => doc.similarity >= threshold)
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, parseInt(limit));
 
     res.json({
       success: true,
       data: results,
+      query,
+      threshold,
+      totalFound: results.length,
     });
   } catch (error) {
     console.error("Semantic search error:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Server error during semantic search",
+    });
   }
 };
 
@@ -120,51 +153,73 @@ const getSearchSuggestions = async (req, res) => {
     const { q } = req.query;
 
     if (!q || q.length < 2) {
-      return res.json({ success: true, data: { tags: [], titles: [] } });
+      return res.json({
+        success: true,
+        data: { tags: [], titles: [] },
+      });
     }
 
-    const userId = new mongoose.Types.ObjectId(req.user.id);
+    const userId = req.user.id;
+
+    // Access filter
+    const accessFilter = {
+      $or: [
+        { author: userId },
+        { visibility: "public" },
+        { "collaborators.user": userId },
+      ],
+    };
 
     // Get tag suggestions
     const tagSuggestions = await Document.aggregate([
+      { $match: accessFilter },
+      { $unwind: "$tags" },
       {
         $match: {
-          $or: [
-            { author: userId },
-            { visibility: "public" },
-            { "collaborators.user": userId },
-          ],
+          tags: { $regex: q, $options: "i" },
         },
       },
-      { $unwind: "$tags" },
-      { $match: { tags: { $regex: q, $options: "i" } } },
-      { $group: { _id: "$tags", count: { $sum: 1 } } },
+      {
+        $group: {
+          _id: "$tags",
+          count: { $sum: 1 },
+        },
+      },
       { $sort: { count: -1 } },
       { $limit: 5 },
+      {
+        $project: {
+          text: "$_id",
+          count: 1,
+          _id: 0,
+        },
+      },
     ]);
 
     // Get title suggestions
     const titleSuggestions = await Document.find({
+      ...accessFilter,
       title: { $regex: q, $options: "i" },
-      $or: [
-        { author: req.user.id },
-        { visibility: "public" },
-        { "collaborators.user": req.user.id },
-      ],
     })
-      .select("title")
+      .select("title _id")
       .limit(5);
 
     res.json({
       success: true,
       data: {
-        tags: tagSuggestions.map((t) => ({ text: t._id, count: t.count })),
-        titles: titleSuggestions.map((d) => ({ text: d.title, id: d._id })),
+        tags: tagSuggestions,
+        titles: titleSuggestions.map((d) => ({
+          text: d.title,
+          id: d._id,
+        })),
       },
     });
   } catch (error) {
     console.error("Get search suggestions error:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Server error getting suggestions",
+    });
   }
 };
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   useDocument,
@@ -35,10 +35,21 @@ const DocumentView = () => {
   const { user } = useAuth();
   const [showVersions, setShowVersions] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const versionHistoryRef = useRef(null);
 
   const { data: document, isLoading, error } = useDocument(id);
   const toggleLike = useToggleLike();
   const deleteDocument = useDeleteDocument();
+
+  const handleToggleVersions = () => {
+    const willShow = !showVersions;
+    setShowVersions(willShow);
+    if (willShow) {
+      setTimeout(() => {
+        versionHistoryRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  };
 
   const handleDownload = async () => {
     toast.promise(
@@ -71,6 +82,52 @@ const DocumentView = () => {
         error: (err) => err.message || "Could not download document.",
       }
     );
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: document.title,
+      text: document.summary || `Check out this document: ${document.title}`,
+      url: window.location.href,
+    };
+
+    // Use Web Share API if available (common on mobile)
+    if (navigator.share) {
+      try {
+        toast.loading("Preparing document for sharing...");
+        const response = await documentsAPI.download(document._id);
+        const blob = new Blob([response.data], { type: "application/pdf" });
+        const filename = `${document.title.replace(/[^a-z0-9_.-]/gi, "_")}.pdf`;
+        const file = new File([blob], filename, { type: "application/pdf" });
+
+        toast.dismiss();
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: shareData.title,
+            text: shareData.text,
+          });
+          toast.success("Document shared successfully!");
+        } else {
+          // Fallback to sharing URL if files are not supported
+          await navigator.share(shareData);
+        }
+      } catch (error) {
+        toast.dismiss();
+        if (error.name !== "AbortError") {
+          toast.error(`Could not share document: ${error.message}`);
+        }
+      }
+    } else {
+      // Fallback for desktop: copy link to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Link copied to clipboard!");
+      } catch (err) {
+        toast.error("Failed to copy link.");
+      }
+    }
   };
 
   if (isLoading) {
@@ -152,14 +209,17 @@ const DocumentView = () => {
               </button>
 
               <button
-                onClick={() => setShowVersions(!showVersions)}
+                onClick={handleToggleVersions}
                 className="btn btn-secondary flex items-center space-x-2"
               >
                 <History size={16} />
                 <span>Versions</span>
               </button>
 
-              <button className="btn btn-secondary flex items-center space-x-2">
+              <button
+                onClick={handleShare}
+                className="btn btn-secondary flex items-center space-x-2"
+              >
                 <Share2 size={16} />
                 <span>Share</span>
               </button>
@@ -284,7 +344,9 @@ const DocumentView = () => {
       </div>
 
       {/* Version History */}
-      {showVersions && <VersionHistory documentId={document._id} />}
+      <div ref={versionHistoryRef}>
+        {showVersions && <VersionHistory documentId={document._id} />}
+      </div>
 
       {/* Collaborators */}
       {document.collaborators && document.collaborators.length > 0 && (

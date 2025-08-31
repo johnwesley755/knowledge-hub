@@ -8,8 +8,13 @@ const { protect } = require("../middleware/auth");
 
 const router = express.Router();
 
-router.get("/text", protect, textSearch);
-router.post("/semantic", protect, semanticSearch);
-router.get("/suggestions", protect, getSearchSuggestions);
+// Add error handling middleware for search routes
+const asyncHandler = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
+router.get("/text", protect, asyncHandler(textSearch));
+router.post("/semantic", protect, asyncHandler(semanticSearch));
+router.get("/suggestions", protect, asyncHandler(getSearchSuggestions));
 
 module.exports = router;

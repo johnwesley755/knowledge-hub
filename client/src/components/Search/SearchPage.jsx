@@ -1,39 +1,31 @@
-import { useState } from "react";
-import { useQuery } from "react-query";
-import { searchAPI } from "../../services/api.js";
-import SearchResults from "./SearchResults.jsx";
-import SemanticSearch from "./SemanticSearch.jsx";
-import LoadingSpinner from "../Common/LoadingSpinner.jsx";
-import { Search, Filter, Brain, List } from "lucide-react";
-import { debounce } from "../../utils/helpers.js";
+import { useState, useEffect } from "react";
+import {
+  useTextSearch,
+  useSemanticSearch,
+  useSearchSuggestions,
+} from "../../hooks/useSearch";
+import SearchResults from "./SearchResults";
+import SemanticSearch from "./SemanticSearch";
+import { Search, Filter, Brain, X } from "lucide-react";
 
 const SearchPage = () => {
   const [searchMode, setSearchMode] = useState("text"); // 'text' or 'semantic'
   const [query, setQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     category: "",
     author: "",
-    page: 1,
     limit: 10,
   });
-  const [showFilters, setShowFilters] = useState(false);
 
-  // Debounced search for text search
-  const debouncedTextSearch = debounce(async (searchQuery, searchFilters) => {
-    if (!searchQuery.trim()) return { data: [], pagination: {} };
+  // Text search hook
+  const textSearch = useTextSearch();
 
-    const params = { q: searchQuery, ...searchFilters };
-    const response = await searchAPI.textSearch(params);
-    return response.data;
-  }, 500);
+  // Semantic search hook
+  const semanticSearch = useSemanticSearch();
 
-  const { data: textResults, isLoading: textLoading } = useQuery(
-    ["text-search", query, filters],
-    () => debouncedTextSearch(query, filters),
-    {
-      enabled: searchMode === "text" && query.trim().length > 0,
-    }
-  );
+  // Search suggestions
+  const suggestions = useSearchSuggestions(query);
 
   const categories = [
     "Research",
@@ -44,22 +36,55 @@ const SearchPage = () => {
     "Other",
   ];
 
-  const handleSearch = (value) => {
-    setQuery(value);
-    setFilters((prev) => ({ ...prev, page: 1 }));
+  // Handle search
+  const handleSearch = (searchQuery = query) => {
+    if (!searchQuery.trim()) return;
+
+    if (searchMode === "text") {
+      textSearch.search({
+        q: searchQuery,
+        ...filters,
+      });
+    } else {
+      semanticSearch.search(searchQuery, {
+        threshold: 0.7,
+        limit: filters.limit,
+      });
+    }
   };
+
+  // Auto-search when query changes (debounced)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (query.trim()) {
+        handleSearch(query);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [query, searchMode, filters]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value,
-      page: 1,
     }));
   };
 
-  const handlePageChange = (newPage) => {
-    setFilters((prev) => ({ ...prev, page: newPage }));
+  const clearSearch = () => {
+    setQuery("");
+    setFilters({
+      category: "",
+      author: "",
+      limit: 10,
+    });
   };
+
+  const isLoading =
+    searchMode === "text" ? textSearch.isLoading : semanticSearch.isLoading;
+  const results =
+    searchMode === "text" ? textSearch.results : semanticSearch.results;
+  const pagination = searchMode === "text" ? textSearch.pagination : null;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -114,34 +139,88 @@ const SearchPage = () => {
           <input
             type="text"
             value={query}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="input pl-10"
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
+            className="input pl-10 pr-10"
             placeholder={
               searchMode === "text"
                 ? "Search by title, content, or tags..."
                 : "Describe what you're looking for..."
             }
           />
+          {query && (
+            <button
+              onClick={clearSearch}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
 
-        {/* Filters */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center space-x-2 px-3 py-2 text-sm rounded-lg transition-colors ${
-              showFilters
-                ? "bg-primary-100 text-primary-700"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            <Filter size={16} />
-            <span>Filters</span>
-          </button>
+        {/* Search Suggestions */}
+        {query.length >= 2 &&
+          (suggestions.tags.length > 0 || suggestions.titles.length > 0) && (
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+              <div className="text-sm text-gray-600 mb-2">Suggestions:</div>
+              <div className="flex flex-wrap gap-2">
+                {suggestions.tags.slice(0, 3).map((tag, index) => (
+                  <button
+                    key={`tag-${index}`}
+                    onClick={() => setQuery(tag.text)}
+                    className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200 transition-colors"
+                  >
+                    #{tag.text} ({tag.count})
+                  </button>
+                ))}
+                {suggestions.titles.slice(0, 2).map((title, index) => (
+                  <button
+                    key={`title-${index}`}
+                    onClick={() => setQuery(title.text)}
+                    className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded hover:bg-green-200 transition-colors"
+                  >
+                    {title.text}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
-          {query && (
+        {/* Filters and Results Info */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center space-x-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                showFilters
+                  ? "bg-primary-100 text-primary-700"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              <Filter size={16} />
+              <span>Filters</span>
+            </button>
+
+            <button
+              onClick={() => handleSearch()}
+              disabled={!query.trim() || isLoading}
+              className="btn btn-primary text-sm disabled:opacity-50"
+            >
+              {isLoading ? "Searching..." : "Search"}
+            </button>
+          </div>
+
+          {results.length > 0 && (
             <div className="text-sm text-gray-500">
-              {searchMode === "text" && textResults?.pagination?.total && (
-                <span>{textResults.pagination.total} results found</span>
+              {searchMode === "text" && pagination?.total && (
+                <span>{pagination.total} results found</span>
+              )}
+              {searchMode === "semantic" && (
+                <span>{results.length} results found</span>
               )}
             </div>
           )}
@@ -150,7 +229,7 @@ const SearchPage = () => {
         {/* Filter Panel */}
         {showFilters && searchMode === "text" && (
           <div className="mt-4 pt-4 border-t border-gray-200">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Category
@@ -182,10 +261,22 @@ const SearchPage = () => {
                   }
                   className="input"
                 >
+                  <option value={5}>5</option>
                   <option value={10}>10</option>
                   <option value={25}>25</option>
                   <option value={50}>50</option>
                 </select>
+              </div>
+
+              <div className="flex items-end">
+                <button
+                  onClick={() =>
+                    setFilters({ category: "", author: "", limit: 10 })
+                  }
+                  className="btn btn-secondary text-sm w-full"
+                >
+                  Clear Filters
+                </button>
               </div>
             </div>
           </div>
@@ -197,20 +288,24 @@ const SearchPage = () => {
         <div className="space-y-6">
           {searchMode === "text" ? (
             <SearchResults
-              results={textResults?.data || []}
-              pagination={textResults?.pagination}
-              loading={textLoading}
+              results={results}
+              pagination={pagination}
+              loading={isLoading}
               query={query}
-              onPageChange={handlePageChange}
+              onPageChange={(page) => textSearch.changePage(page)}
             />
           ) : (
-            <SemanticSearch query={query} />
+            <SemanticSearch
+              results={results}
+              loading={isLoading}
+              query={query}
+            />
           )}
         </div>
       )}
 
       {/* Empty State */}
-      {!query.trim() && (
+      {!query && (
         <div className="bg-white rounded-lg shadow-sm border p-12 text-center">
           <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">

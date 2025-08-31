@@ -60,13 +60,11 @@ export const documentsAPI = {
     api.get(`/documents/${id}/download`, { responseType: "blob" }),
 
 };
-
 export const searchAPI = {
   textSearch: (params) => api.get("/search/text", { params }),
   semanticSearch: (data) => api.post("/search/semantic", data),
   getSuggestions: (params) => api.get("/search/suggestions", { params }),
 };
-
 export const qaAPI = {
   askQuestion: (data) => api.post("/qa/ask", data),
   getHistory: (documentId) => api.get(`/qa/history/${documentId}`),
