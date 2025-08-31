@@ -12,9 +12,9 @@ import Register from "./components/Auth/Register";
 
 // Main components
 import Dashboard from "./components/dashboard/Dashboard";
-import DocumentForm from "./components/documents/DocumentForm";
-import DocumentView from "./components/documents/DocumentView";
-import SearchPage from "./components/search/SearchPage";
+import DocumentForm from "./components/Documents/DocumentForm";
+import DocumentView from "./components/Documents/DocumentView";
+import SearchPage from "./components/Search/SearchPage";
 import TeamQA from "./components/QA/TeamQA";
 import Profile from "./components/Profile/Profile";
 
