@@ -22,7 +22,8 @@ module.exports = (app, io) => {
   // CORS
   app.use(
     cors({
-      origin: process.env.CLIENT_URL || "http://localhost:3000",
+      origin:
+        process.env.CLIENT_URL || "https://knowledge-hub-psi-nine.vercel.app",
       credentials: true,
     })
   );
