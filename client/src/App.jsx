@@ -2,19 +2,19 @@ import { Routes, Route } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
 
 // Common components
-import Navbar from "./components/Common/Navbar";
-import LoadingSpinner from "./components/Common/LoadingSpinner";
-import ProtectedRoute from "./components/Common/ProtectedRoute";
+import Navbar from "./components/common/Navbar";
+import LoadingSpinner from "./components/common/LoadingSpinner";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
 // Auth components
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 
 // Main components
-import Dashboard from "./components/Dashboard/Dashboard";
-import DocumentForm from "./components/Documents/DocumentForm";
-import DocumentView from "./components/Documents/DocumentView";
-import SearchPage from "./components/Search/SearchPage";
+import Dashboard from "./components/dashboard/Dashboard";
+import DocumentForm from "./components/documents/DocumentForm";
+import DocumentView from "./components/documents/DocumentView";
+import SearchPage from "./components/search/SearchPage";
 import TeamQA from "./components/QA/TeamQA";
 import Profile from "./components/Profile/Profile";
 
